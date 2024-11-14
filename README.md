@@ -13,10 +13,7 @@
 - Configurable settings for game difficulty and alien speed.
 
 ## Screenshot
-```markdown
 ![SpaceInvaders](https://github.com/user-attachments/assets/4bbfd3ac-5afa-4fbc-a61e-b6cd670580fb)
-
-```
 
 ## Requirements
 - **Allegro 5** library
@@ -87,10 +84,7 @@ Aquí tienes la versión en español del README. Puedes incluir ambas versiones 
 - Configuraciones ajustables para la dificultad del juego y velocidad de los alienígenas.
 
 ## Captura de Pantalla
-```markdown
 ![SpaceInvaders](https://github.com/user-attachments/assets/48a46d8a-0180-436b-8c95-7769712331ff)
-
-```
 
 ## Requisitos
 - Biblioteca **Allegro 5**
