@@ -1,0 +1,53 @@
+# Ignorar ejecutables generados en Windows
+*.exe
+
+# Ignorar archivos de objeto generados por el compilador
+*.o
+
+# Ignorar archivos de depuración
+*.log
+*.tmp
+*.temp
+*.bak
+
+# Ignorar carpetas de configuración y cachés de Visual Studio Code
+.vscode/
+.vscode/*
+
+# Ignorar archivos de configuración específicos de Visual Studio Code
+*.code-workspace
+
+# Ignorar archivos de dependencias y configuraciones locales
+.DS_Store
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Ignorar paquetes comprimidos, si llegas a empaquetar el proyecto
+*.zip
+*.tar.gz
+*.tgz
+
+# Ignorar Makefile backup si se crean copias
+Makefile.bak
+
+# Ignorar carpetas bin o build (si usas una estructura de directorios específica)
+bin/
+build/
+dist/
+
+# Si llegas a tener archivos temporales específicos del compilador o del sistema
+*.obj
+*.pch
+*.ilk
+*.pdb
+*.idb
+*.ipch
+*.aps
+*.ncb
+*.sbr
+*.opendb
+*.opensdf
+*.tlog
+*.lastbuildstate
