@@ -1,53 +1,140 @@
-# Ignorar ejecutables generados en Windows
-*.exe
+# Space Invaders - .gitignore
 
-# Ignorar archivos de objeto generados por el compilador
+# Archivos de compilación
 *.o
+*.obj
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
 
-# Ignorar archivos de depuración
+# Ejecutables
+SpaceInvaders
+SpaceInvaders.exe
+
+# Archivos de debug
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Archivos de preprocesador
+*.i
+
+# Archivos de ensamblador
+*.s
+
+# Librerías precompiladas
+*.lib
+*.a
+*.la
+*.lo
+
+# Archivos de Allegro temporales (si se generan)
 *.log
-*.tmp
-*.temp
-*.bak
 
-# Ignorar carpetas de configuración y cachés de Visual Studio Code
-.vscode/
+# Archivos de sistema macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Archivos de sistema Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Archivos de sistema Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Visual Studio Code
 .vscode/*
-
-# Ignorar archivos de configuración específicos de Visual Studio Code
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 *.code-workspace
 
-# Ignorar archivos de dependencias y configuraciones locales
-.DS_Store
-*.suo
-*.user
-*.userosscache
-*.sln.docstates
+# Archivos de configuración local (si los hay)
+local_config.h
 
-# Ignorar paquetes comprimidos, si llegas a empaquetar el proyecto
-*.zip
+# Archivos de distribución
+*.tar
 *.tar.gz
 *.tgz
+*.zip
+*.rar
+*.7z
 
-# Ignorar Makefile backup si se crean copias
+# Dependencias temporales
+deps/
+tmp/
+temp/
+
+# Archivos de caché
+*.cache
+
+# Archivos de Make
+.depend
 Makefile.bak
 
-# Ignorar carpetas bin o build (si usas una estructura de directorios específica)
-bin/
-build/
-dist/
+# Valgrind
+*.valgrind
+vgcore.*
 
-# Si llegas a tener archivos temporales específicos del compilador o del sistema
-*.obj
-*.pch
-*.ilk
-*.pdb
-*.idb
-*.ipch
-*.aps
-*.ncb
-*.sbr
-*.opendb
-*.opensdf
-*.tlog
-*.lastbuildstate
+# Core dumps
+core
+core.*
+
+# GDB
+.gdb_history
+
+# Clangd (Language Server)
+.clangd/
+compile_commands.json
+
+# CMake (por si en el futuro se usa)
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+
+# Editor backups
+*~
+*.swp
+*.swo
+*.bak
+*.orig
+
+# Logs
+*.log
+logs/

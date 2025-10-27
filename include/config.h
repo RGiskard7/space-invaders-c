@@ -2,9 +2,9 @@
  * @file config.h
  * @brief Configuration file for defining constants and resources in the Space Invaders game.
  *
- * This file contains the necessary paths to resources and constants 
+ * This file contains the necessary paths to resources and constants
  * such as screen dimensions, game object properties, and gameplay parameters.
- * These constants are referenced throughout the codebase to ensure 
+ * These constants are referenced throughout the codebase to ensure
  * uniform configuration and easy adjustments.
  */
 
@@ -12,14 +12,14 @@
 #define CONFIG_H
 
 // Resource Paths for Game Assets
-#define BACKGROUND_IMG_RSC "../resources/images/background.bmp"
-#define FRAME_IMG_RSC "../resources/images/frame.bmp"
-#define SHIP_IMG_RSC "../resources/images/ship.bmp"
-#define MARTIAN_IMG_RSC "../resources/images/martians.bmp"
-#define SHIP_BULLET_IMG_RSC "../resources/images/ship_bullet.bmp"
-#define MART_BULLET_IMG_RSC "../resources/images/martian_bullet.bmp"
-#define EXPLOSION_IMG_RSC "../resources/images/martian_explosion.bmp"
-#define FONT_RSC  "../resources/fonts/space_invaders.ttf"
+#define BACKGROUND_IMG_RSC "resources/images/background.bmp"
+#define FRAME_IMG_RSC "resources/images/frame.bmp"
+#define SHIP_IMG_RSC "resources/images/ship.bmp"
+#define MARTIAN_IMG_RSC "resources/images/martians.bmp"
+#define SHIP_BULLET_IMG_RSC "resources/images/ship_bullet.bmp"
+#define MART_BULLET_IMG_RSC "resources/images/martian_bullet.bmp"
+#define EXPLOSION_IMG_RSC "resources/images/martian_explosion.bmp"
+#define FONT_RSC  "resources/fonts/space_invaders.ttf"
 
 // Points Configuration for Different Martian Types
 #define POINTS_01 30 ///< Points awarded for hitting the first type of martian
@@ -53,7 +53,7 @@
 
 // MARTIANS CONFIGURATION
 #define MAX_ENEMIES 55 ///< Maximum number of enemies
-#define NUM_ENEMY_X 11 ///< Number of martians per row 
+#define NUM_ENEMY_X 11 ///< Number of martians per row
 #define NUM_ENEMY_Y 5 ///< Number of martians per column
 
 #define SPACE_BTW_MARTIANS_X 32 ///< Horizontal space between martians

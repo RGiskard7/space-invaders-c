@@ -1,0 +1,103 @@
+# Makefile para macOS y Linux
+# Space Invaders en C con Allegro 5
+# Autor: RGiskard7
+# Última actualización: Octubre 2024
+
+CC=gcc
+CPLUS=g++
+CFLAGS=-g -Wall -pedantic
+EXECUTABLE=SpaceInvaders
+
+# Detección automática de bibliotecas Allegro mediante pkg-config
+ALLEGRO_LIBS=$(shell pkg-config --libs allegro-5 allegro_main-5 allegro_image-5 allegro_font-5 allegro_ttf-5 allegro_primitives-5)
+ALLEGRO_CFLAGS=$(shell pkg-config --cflags allegro-5)
+
+# Directorios
+SRC_DIR=src
+INCLUDE_DIR=include
+RESOURCES_DIR=resources
+
+# Archivos fuente y objetos
+SRCS=$(SRC_DIR)/main.c $(SRC_DIR)/game.c $(SRC_DIR)/bullet.c $(SRC_DIR)/ship.c $(SRC_DIR)/martian.c $(SRC_DIR)/object.c
+OBJS=main.o game.o bullet.o ship.o martian.o object.o
+
+# Colores para output (opcional)
+COLOR_RESET=\033[0m
+COLOR_GREEN=\033[32m
+COLOR_BLUE=\033[34m
+COLOR_YELLOW=\033[33m
+
+# Regla por defecto
+all: $(EXECUTABLE)
+	@echo "$(COLOR_GREEN)✅ Compilación exitosa$(COLOR_RESET)"
+	@echo "$(COLOR_BLUE)🎮 Ejecuta con: ./$(EXECUTABLE)$(COLOR_RESET)"
+
+# Regla para compilar el ejecutable
+$(EXECUTABLE): $(OBJS)
+	@echo "$(COLOR_YELLOW)🔗 Enlazando Space Invaders...$(COLOR_RESET)"
+	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(OBJS) $(ALLEGRO_LIBS)
+
+# Regla genérica para compilar archivos .c a .o
+%.o: $(SRC_DIR)/%.c
+	@echo "$(COLOR_YELLOW)🔨 Compilando $<...$(COLOR_RESET)"
+	$(CC) $(ALLEGRO_CFLAGS) -I $(INCLUDE_DIR) $(CFLAGS) -c $< -o $@
+
+# Regla para limpiar archivos generados
+clean:
+	@echo "$(COLOR_YELLOW)🧹 Limpiando archivos temporales...$(COLOR_RESET)"
+	rm -f *.o $(EXECUTABLE)
+	@echo "$(COLOR_GREEN)✅ Limpieza completada$(COLOR_RESET)"
+
+# Regla para ejecutar el juego después de compilar
+run: all
+	@echo "$(COLOR_GREEN)🚀 Iniciando Space Invaders...$(COLOR_RESET)"
+	./$(EXECUTABLE)
+
+# Regla para empaquetar los archivos fuente
+dist: clean
+	@echo "$(COLOR_YELLOW)📦 Creando paquete...$(COLOR_RESET)"
+	tar -czf space-invaders.tar.gz $(SRC_DIR)/ $(INCLUDE_DIR)/ $(RESOURCES_DIR)/ Makefile.unix Makefile README.md LICENSE
+	@echo "$(COLOR_GREEN)✅ Paquete creado: space-invaders.tar.gz$(COLOR_RESET)"
+
+# Regla para verificar dependencias
+check-deps:
+	@echo "$(COLOR_BLUE)🔍 Verificando dependencias...$(COLOR_RESET)"
+	@command -v gcc >/dev/null 2>&1 && echo "$(COLOR_GREEN)✅ GCC encontrado$(COLOR_RESET)" || echo "$(COLOR_RED)❌ GCC no encontrado$(COLOR_RESET)"
+	@command -v pkg-config >/dev/null 2>&1 && echo "$(COLOR_GREEN)✅ pkg-config encontrado$(COLOR_RESET)" || echo "$(COLOR_RED)❌ pkg-config no encontrado$(COLOR_RESET)"
+	@pkg-config --exists allegro-5 && echo "$(COLOR_GREEN)✅ Allegro 5 encontrado (versión: $$(pkg-config --modversion allegro-5))$(COLOR_RESET)" || echo "$(COLOR_RED)❌ Allegro 5 no encontrado$(COLOR_RESET)"
+
+# Regla para compilar en modo debug con información adicional
+debug: CFLAGS += -DDEBUG -O0
+debug: clean all
+	@echo "$(COLOR_GREEN)✅ Compilación en modo DEBUG completada$(COLOR_RESET)"
+
+# Regla para compilar optimizado para producción
+release: CFLAGS += -O3 -DNDEBUG
+release: clean all
+	@echo "$(COLOR_GREEN)✅ Compilación RELEASE completada$(COLOR_RESET)"
+
+# Regla de ayuda
+help:
+	@echo "$(COLOR_BLUE)═══════════════════════════════════════════════════$(COLOR_RESET)"
+	@echo "$(COLOR_GREEN)    Space Invaders - Makefile para macOS/Linux$(COLOR_RESET)"
+	@echo "$(COLOR_BLUE)═══════════════════════════════════════════════════$(COLOR_RESET)"
+	@echo ""
+	@echo "$(COLOR_YELLOW)Comandos disponibles:$(COLOR_RESET)"
+	@echo "  $(COLOR_GREEN)make$(COLOR_RESET)              - Compila el juego"
+	@echo "  $(COLOR_GREEN)make run$(COLOR_RESET)          - Compila y ejecuta el juego"
+	@echo "  $(COLOR_GREEN)make clean$(COLOR_RESET)        - Elimina archivos compilados"
+	@echo "  $(COLOR_GREEN)make debug$(COLOR_RESET)        - Compila en modo debug (sin optimización)"
+	@echo "  $(COLOR_GREEN)make release$(COLOR_RESET)      - Compila optimizado para producción"
+	@echo "  $(COLOR_GREEN)make dist$(COLOR_RESET)         - Crea un paquete .tar.gz del proyecto"
+	@echo "  $(COLOR_GREEN)make check-deps$(COLOR_RESET)   - Verifica que las dependencias estén instaladas"
+	@echo "  $(COLOR_GREEN)make help$(COLOR_RESET)         - Muestra esta ayuda"
+	@echo ""
+	@echo "$(COLOR_YELLOW)Ejemplos de uso:$(COLOR_RESET)"
+	@echo "  make && ./SpaceInvaders"
+	@echo "  make run"
+	@echo "  make clean && make release"
+	@echo ""
+
+# Declarar targets que no son archivos
+.PHONY: all clean run dist check-deps debug release help
+

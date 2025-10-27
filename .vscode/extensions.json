@@ -1,0 +1,32 @@
+{
+    // Extensiones recomendadas para el desarrollo de Space Invaders en C
+    "recommendations": [
+        // Soporte para C/C++
+        "ms-vscode.cpptools",
+        "ms-vscode.cpptools-extension-pack",
+
+        // IntelliSense mejorado
+        "ms-vscode.cpptools-themes",
+
+        // Debugging
+        "vadimcn.vscode-lldb",
+
+        // Makefile syntax highlighting
+        "ms-vscode.makefile-tools",
+
+        // GitLens (para ver historia de cambios)
+        "eamodio.gitlens",
+
+        // Better Comments (comentarios más legibles)
+        "aaron-bond.better-comments",
+
+        // Todo Tree (para trackear TODOs en el código)
+        "gruntfuggly.todo-tree",
+
+        // Error Lens (muestra errores inline)
+        "usernamehw.errorlens"
+    ],
+
+    "unwantedRecommendations": []
+}
+

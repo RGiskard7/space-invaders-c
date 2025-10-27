@@ -1,0 +1,135 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Space Invaders (macOS/Linux)",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "-f",
+                "Makefile.unix"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "Compila el proyecto usando Makefile.unix"
+        },
+        {
+            "label": "Build Space Invaders (Windows)",
+            "type": "shell",
+            "command": "mingw32-make",
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "Compila el proyecto usando Makefile (Windows)"
+        },
+        {
+            "label": "Build and Run (macOS/Linux)",
+            "type": "shell",
+            "command": "./build.sh",
+            "args": ["run"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "Compila y ejecuta el juego en macOS/Linux"
+        },
+        {
+            "label": "Build and Run (Windows)",
+            "type": "shell",
+            "command": "build.bat",
+            "args": ["run"],
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "Compila y ejecuta el juego en Windows"
+        },
+        {
+            "label": "Clean Build Files (macOS/Linux)",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "-f",
+                "Makefile.unix",
+                "clean"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Limpia archivos de compilación (.o y ejecutable)"
+        },
+        {
+            "label": "Clean Build Files (Windows)",
+            "type": "shell",
+            "command": "mingw32-make",
+            "args": ["clean"],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": [],
+            "detail": "Limpia archivos de compilación (.o y ejecutable)"
+        },
+        {
+            "label": "Check Dependencies",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "-f",
+                "Makefile.unix",
+                "check-deps"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": true
+            },
+            "problemMatcher": [],
+            "detail": "Verifica que todas las dependencias estén instaladas"
+        }
+    ]
+}
+
