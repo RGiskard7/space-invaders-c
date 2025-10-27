@@ -204,8 +204,8 @@ echo.
 echo %INFO% Para compilar el juego, abre MSYS2 MINGW64 y ejecuta:
 echo.
 echo   cd /c/Users/%USERNAME%/ruta/a/space-invaders-c
-echo   make -f Makefile.unix
-echo   ./SpaceInvaders
+echo   make -f Makefile.windows
+echo   ./SpaceInvaders.exe
 echo.
 echo O usa el script de compilacion:
 echo   build.bat run

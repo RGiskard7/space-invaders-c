@@ -68,20 +68,34 @@ El script automáticamente:
 # 2. Abrir "MSYS2 MINGW64" y ejecutar:
 pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-allegro make
 
-# 3. Navegar al proyecto
-cd /c/Users/TuUsuario/space-invaders-c
+# 3. Navegar al proyecto (varias opciones):
+# Opción A: Si está en tu home
+cd ~
 
-# 4. Compilar
-make -f Makefile.unix
+# Opción B: Si está en OneDrive
+cd /c/Users/TuUsuario/OneDrive/
+
+# Opción C: Si está en Escritorio
+cd /c/Users/TuUsuario/Desktop/
+
+# Opción D: Buscar el proyecto
+find /c -name "space-invaders-c" -type d 2>/dev/null
+# Luego cd a la ruta encontrada
+
+cd espacio-invaders-c  # O como se llame tu carpeta
+
+# 4. Compilar (usa Makefile.windows, NO Makefile.unix)
+make -f Makefile.windows
 
 # 5. Ejecutar
-./SpaceInvaders
+./SpaceInvaders.exe
 ```
 
 #### Ejecuciones Siguientes
 ```bash
-make -f Makefile.unix
-./SpaceInvaders
+# En la terminal MSYS2 MINGW64:
+make -f Makefile.windows
+./SpaceInvaders.exe
 ```
 
 ### Opción B: Con MinGW + CMD (Si tienes Allegro instalado en C:\)

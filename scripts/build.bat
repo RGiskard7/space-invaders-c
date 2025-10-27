@@ -57,10 +57,28 @@ if "%1"=="clean" (
     exit /b 0
 )
 
+REM Determinar qué Makefile usar
+set "MAKEFILE_TO_USE=Makefile"
+
+REM Verificar si estamos en entorno MSYS2 (usar Makefile.windows)
+if defined MSYSTEM (
+    set "MAKEFILE_TO_USE=Makefile.windows"
+) else (
+    REM Verificar si existe Makefile.windows y usarlo en MSYS2 si está disponible
+    if exist Makefile.windows (
+        REM Verificar si mingw32-make está disponible (MSYS2/MinGW)
+        where mingw32-make >nul 2>&1
+        if %ERRORLEVEL% EQU 0 (
+            set "MAKEFILE_TO_USE=Makefile.windows"
+        )
+    )
+)
+
 REM Compilar
 echo.
 echo Compilando Space Invaders...
-%MAKE_CMD%
+echo [INFO] Usando: %MAKE_CMD% -f %MAKEFILE_TO_USE%
+%MAKE_CMD% -f %MAKEFILE_TO_USE%
 
 if %ERRORLEVEL% NEQ 0 (
     echo.

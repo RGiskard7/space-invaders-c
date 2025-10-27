@@ -1,0 +1,70 @@
+# Makefile para Windows (MSYS2/MingW)
+# Space Invaders en C con Allegro Lua
+# Autor: RGiskard7
+# Última actualización: Octubre 2024
+
+CC=gcc
+CPLUS=g++
+CFLAGS=-g -Wall -pedantic
+EXECUTABLE=SpaceInvaders.exe
+
+# Librerías de Allegro (Windows con MSYS2)
+# Asume que Allegro está instalado mediante pacman en MSYS2
+ALLEGRO_LIBS=-lallegro-5 -lallegro_main-5 -lallegro_image-5 -lallegro_font-5 -lallegro_ttf-5 -lallegro_primitives-5
+
+# Directorios
+SRC_DIR=src
+INCLUDE_DIR=include
+RESOURCES_DIR=resources
+
+# Archivos fuente y objetos
+SRCS=$(SRC_DIR)/main.c $(SRC_DIR)/game.c $(SRC_DIR)/bullet.c $(SRC_DIR)/ship.c $(SRC_DIR)/martian.c $(SRC_DIR)/object.c
+OBJS=main.o game.o bullet.o ship.o martian.o object.o
+
+# Colores para output (opcional)
+COLOR_RESET=\033[0m
+COLOR_GREEN=\033[32m
+COLOR_BLUE=\033[34m
+COLOR_YELLOW=\033[33m
+
+# Regla por defecto
+all: $(EXECUTABLE)
+	@echo "$(COLOR_GREEN)✅ Compilación exitosa$(COLOR_RESET)"
+	@echo "$(COLOR_BLUE)🎮 Ejecuta con: $(EXECUTABLE)$(COLOR_RESET)"
+
+# Regla para compilar el ejecutable
+$(EXECUTABLE): $(OBJS)
+	@echo "$(COLOR_YELLOW)🔗 Enlazando Space Invaders...$(COLOR_RESET)"
+	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(OBJS) $(ALLEGRO_LIBS)
+
+# Regla genérica para compilar archivos .c a .o
+%.o: $(SRC_DIR)/%.c
+	@echo "$(COLOR_YELLOW)🔨 Compilando $<...$(COLOR_RESET)"
+	$(CC) -I $(INCLUDE_DIR) $(CFLAGS) -c $< -o $@
+
+# Regla para limpiar archivos generados
+clean:
+	@echo "$(COLOR_YELLOW)🧹 Limpiando archivos temporales...$(COLOR_RESET)"
+	rm -f *.o $(EXECUTABLE)
+	@echo "$(COLOR_GREEN)✅ Limpieza completada$(COLOR_RESET)"
+
+# Regla para ejecutar el juego después de compilar
+run: all
+	@echo "$(COLOR_GREEN)🚀 Iniciando Space Invaders...$(COLOR_RESET)"
+	./$(EXECUTABLE)
+
+# Regla de ayuda
+help:
+	@echo "$(COLOR_BLUE)═══════════════════════════════════════════════════$(COLOR_RESET)"
+	@echo "$(COLOR_GREEN)    Space Invaders - Makefile para Windows$(COLOR_RESET)"
+	@echo "$(COLOR_BLUE)═══════════════════════════════════════════════════$(COLOR_RESET)"
+	@echo ""
+	@echo "$(COLOR_YELLOW)Comandos disponibles:$(COLOR_RESET)"
+	@echo "  $(COLOR_GREEN)make -f Makefile.windows$(COLOR_RESET)    - Compila el juego"
+	@echo "  $(COLOR_GREEN)make -f Makefile.windows run$(COLOR_RESET) - Compila y ejecuta el juego"
+	@echo "  $(COLOR_GREEN)make -f Makefile.windows clean$(COLOR_RESET) - Elimina archivos compilados"
+	@echo "  $(COLOR_GREEN)make -f Makefile.windows help$(COLOR_RESET) - Muestra esta ayuda"
+	@echo ""
+
+# Declarar targets que no son archivos
+.PHONY: all clean run help
