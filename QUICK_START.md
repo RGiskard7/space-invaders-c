@@ -1,10 +1,10 @@
-# 🚀 Guía Rápida de Inicio - Space Invaders
+# Guía Rápida de Inicio - Space Invaders
 
 Esta guía te ayudará a compilar y ejecutar el juego en **menos de 5 minutos**.
 
 ---
 
-## 🎯 El Camino MÁS Rápido (Todos los Sistemas)
+## El Camino MÁS Rápido (Todos los Sistemas)
 
 ```bash
 # 1. Clonar el proyecto
@@ -12,19 +12,19 @@ git clone https://github.com/RGiskard7/space-invaders-c.git
 cd space-invaders-c
 
 # 2. Instalar dependencias automáticamente
-./install-deps.sh
+scripts/install-deps.sh
 
 # 3. Compilar y ejecutar
-./build.sh run
+scripts/build.sh run
 ```
 
 **¡Listo!** El script `install-deps.sh` detecta tu sistema operativo (macOS, Ubuntu, Fedora, Arch) e instala Allegro 5 automáticamente.
 
 ---
 
-## ⚡ Inicio Rápido por Sistema Operativo
+## Inicio Rápido por Sistema Operativo
 
-### 🍎 macOS
+### macOS
 
 ```bash
 # 1. Instalar Allegro (solo una vez)
@@ -42,9 +42,24 @@ cd space-invaders-c
 
 ---
 
-### 🪟 Windows
+### Windows
 
-#### Método 1: Usando MSYS2 (Recomendado)
+#### Método 1: Instalación Automática (Recomendado)
+
+```cmd
+# 1. Clonar el proyecto
+git clone https://github.com/RGiskard7/space-invaders-c.git
+cd space-invaders-c
+
+# 2. Instalar dependencias automáticamente
+scripts\install-deps.bat
+
+# 3. Una vez instalado, compilar y ejecutar desde MSYS2 MINGW64:
+make -f Makefile.unix
+./SpaceInvaders
+```
+
+#### Método 2: Instalación Manual con MSYS2
 
 ```bash
 # 1. Descargar e instalar MSYS2 desde: https://www.msys2.org/
@@ -72,7 +87,7 @@ build.bat run
 
 ---
 
-### 🐧 Linux (Ubuntu/Debian)
+### Linux (Ubuntu/Debian)
 
 ```bash
 # 1. Instalar dependencias
@@ -89,7 +104,7 @@ cd space-invaders-c
 
 ---
 
-## 📝 Compilación Manual (Todos los sistemas)
+## Compilación Manual (Todos los sistemas)
 
 Si los scripts no funcionan, puedes compilar manualmente:
 
@@ -120,7 +135,7 @@ SpaceInvaders.exe
 
 ---
 
-## 🎮 Controles del Juego
+## Controles del Juego
 
 | Tecla | Acción |
 |-------|--------|
@@ -131,7 +146,7 @@ SpaceInvaders.exe
 
 ---
 
-## 💻 Compilación desde Visual Studio Code
+## Compilación desde Visual Studio Code
 
 ### 1. Abrir el proyecto en VSCode
 
@@ -160,7 +175,7 @@ Presiona `Cmd+Shift+P` (macOS) o `Ctrl+Shift+P` (Windows/Linux) y escribe "Tasks
 
 ---
 
-## 🔧 Solución de Problemas Comunes
+## Solución de Problemas Comunes
 
 ### ❌ "allegro not found" o "pkg-config: command not found"
 
@@ -213,7 +228,7 @@ NO deben tener `../` al principio si el ejecutable está en el directorio raíz.
 
 3. **Usa el script de verificación:**
 ```bash
-./test_resources.sh
+scripts/test_resources.sh
 ```
 
 ---
@@ -255,7 +270,7 @@ pacman -S mingw-w64-x86_64-gcc make
 
 ---
 
-## 📊 Verificar Instalación
+## Verificar Instalación
 
 Ejecuta estos comandos para verificar que todo está instalado correctamente:
 
@@ -281,7 +296,7 @@ pacman -Qi mingw-w64-x86_64-allegro
 
 ---
 
-## 🎯 Próximos Pasos
+## Próximos Pasos
 
 Una vez que el juego funcione:
 
@@ -291,13 +306,8 @@ Una vez que el juego funcione:
 
 ---
 
-## 📞 ¿Necesitas Ayuda?
+## ¿Necesitas Ayuda?
 
 - **Problemas técnicos**: [Abre un issue](https://github.com/RGiskard7/space-invaders-c/issues)
 - **Documentación completa**: [Ver README.md](README.md)
 - **Código fuente**: [GitHub Repository](https://github.com/RGiskard7/space-invaders-c)
-
----
-
-**¡Que disfrutes el juego! 🎮👾**
-

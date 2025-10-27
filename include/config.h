@@ -27,8 +27,10 @@
 #define POINTS_03 10 ///< Points awarded for hitting the third type of martian
 
 // Display Configuration
-#define DISPLAY_HEIGHT 600 //375 - 500 ///< Height of the game display window
-#define DISPLAY_WIDTH 600 //600 - 800 ///< Width of the game display window
+// IMPORTANTE: El juego está diseñado para 600x600. Otros tamaños se ven mal.
+// En macOS Retina se verá pequeño, pero es la única forma correcta sin modificar código.
+#define DISPLAY_HEIGHT 600 ///< Height of the game display window
+#define DISPLAY_WIDTH 600 ///< Width of the game display window
 
 // Frame and Canvas Dimensions
 #define FRAME_WIDTH 40 ///< Width of the display frame (side borders)

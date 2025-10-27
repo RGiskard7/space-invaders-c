@@ -1,15 +1,67 @@
 # Space Invaders en C
 
-![Space Invaders](https://github.com/user-attachments/assets/48a46d8a-0180-436b-8c95-7769712331ff)
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/48a46d8a-0180-436b-8c95-7769712331ff" alt="Space Invaders" width="600"/>
+</div>
 
 > **⚡ Inicio Rápido:**
 > Si quieres empezar inmediatamente, ejecuta:
 > ```bash
-> ./install-deps.sh  # Instala Allegro y dependencias automáticamente
-> ./build.sh run     # Compila y ejecuta el juego
+> scripts/install-deps.sh  # Instala Allegro y dependencias automáticamente
+> scripts/build.sh run     # Compila y ejecuta el juego
 > ```
 >
 > O consulta [`QUICK_START.md`](QUICK_START.md) para instrucciones detalladas.
+
+---
+
+## 📑 Tabla de Contenidos
+
+- [Space Invaders en C](#space-invaders-en-c)
+  - [📑 Tabla de Contenidos](#-tabla-de-contenidos)
+  - [📋 Descripción del Proyecto](#-descripción-del-proyecto)
+    - [Características Principales](#características-principales)
+  - [🏗️ Arquitectura del Proyecto](#️-arquitectura-del-proyecto)
+  - [🔧 Requisitos del Sistema](#-requisitos-del-sistema)
+    - [Software Necesario](#software-necesario)
+    - [Sistemas Operativos Soportados](#sistemas-operativos-soportados)
+  - [📦 Instalación de Dependencias](#-instalación-de-dependencias)
+    - [En macOS](#en-macos)
+    - [En Windows](#en-windows)
+      - [Opción 1: Instalación Automática (Recomendado)](#opción-1-instalación-automática-recomendado)
+      - [Opción 2: Instalación Manual](#opción-2-instalación-manual)
+      - [Opción 2: Instalación manual de Allegro](#opción-2-instalación-manual-de-allegro)
+    - [En Linux (Ubuntu/Debian)](#en-linux-ubuntudebian)
+    - [En Linux (Fedora)](#en-linux-fedora)
+  - [🚀 Compilación y Ejecución](#-compilación-y-ejecución)
+    - [1. Clonar el Repositorio](#1-clonar-el-repositorio)
+    - [2. Compilar el Proyecto](#2-compilar-el-proyecto)
+      - [En macOS/Linux](#en-macoslinux)
+      - [En Windows](#en-windows-1)
+    - [3. Ejecutar el Juego](#3-ejecutar-el-juego)
+      - [En macOS/Linux](#en-macoslinux-1)
+      - [En Windows](#en-windows-2)
+  - [🎮 Controles del Juego](#-controles-del-juego)
+  - [⚙️ Configuración del Juego](#️-configuración-del-juego)
+  - [🐛 Solución de Problemas](#-solución-de-problemas)
+    - [Error: "Allegro not found" (macOS/Linux)](#error-allegro-not-found-macoslinux)
+    - [Error: "Cannot find -lallegro\_monolith" (Windows)](#error-cannot-find--lallegro_monolith-windows)
+    - [El juego se ejecuta pero no muestra gráficos o dice "Error initializing game"](#el-juego-se-ejecuta-pero-no-muestra-gráficos-o-dice-error-initializing-game)
+    - [Error de compilación: "undefined reference to..."](#error-de-compilación-undefined-reference-to)
+    - [En macOS: "permission denied" al ejecutar](#en-macos-permission-denied-al-ejecutar)
+  - [📝 Desarrollo y Contribución](#-desarrollo-y-contribución)
+    - [Compilar en Modo Debug](#compilar-en-modo-debug)
+    - [Ejecutar con Valgrind (detección de memory leaks)](#ejecutar-con-valgrind-detección-de-memory-leaks)
+    - [Estructura de Commits](#estructura-de-commits)
+    - [Roadmap del Proyecto](#roadmap-del-proyecto)
+  - [📜 Licencia](#-licencia)
+  - [🤝 Contribuciones](#-contribuciones)
+    - [Áreas de Mejora](#áreas-de-mejora)
+  - [📞 Contacto](#-contacto)
+  - [📚 Referencias y Recursos](#-referencias-y-recursos)
+  - [🙏 Agradecimientos](#-agradecimientos)
+
+---
 
 ## 📋 Descripción del Proyecto
 
@@ -17,14 +69,14 @@
 
 ### Características Principales
 
-- 🎮 **Nave espacial controlable** con movimiento lateral y disparo
-- 👾 **55 invasores alienígenas** organizados en formación (11x5)
-- 💥 **Sistema de colisiones** entre proyectiles y entidades
-- 🎯 **Sistema de puntuación** por tipo de enemigo (10/20/30 puntos)
-- ❤️ **Sistema de vidas** (3 vidas iniciales)
-- 🎨 **Sprites y animaciones** personalizadas
-- 🔊 **Efectos de sonido** integrados
-- ⚙️ **Configuración modular** en `config.h`
+- **Nave espacial controlable** con movimiento lateral y disparo
+- **55 invasores alienígenas** organizados en formación (11x5)
+- **Sistema de colisiones** entre proyectiles y entidades
+- **Sistema de puntuación** por tipo de enemigo (10/20/30 puntos)
+- **Sistema de vidas** (3 vidas iniciales)
+- **Sprites y animaciones** personalizadas
+- **Efectos de sonido** integrados
+- **Configuración modular** en `config.h`
 
 ---
 
@@ -32,7 +84,13 @@
 
 ```
 space-invaders-c/
-├── include/              # Archivos de cabecera (.h)
+├── scripts/             # Scripts de automatización
+│   ├── install-deps.sh  # Instalador de dependencias (macOS/Linux)
+│   ├── install-deps.bat # Instalador de dependencias (Windows)
+│   ├── build.sh         # Script de compilación (macOS/Linux)
+│   ├── build.bat        # Script de compilación (Windows)
+│   └── test_resources.sh # Verificador de recursos
+├── include/             # Archivos de cabecera (.h)
 │   ├── bullet.h         # Gestión de proyectiles
 │   ├── config.h         # Configuración centralizada
 │   ├── game.h           # Lógica principal del juego
@@ -52,7 +110,8 @@ space-invaders-c/
 │   ├── sounds/          # Efectos de sonido (.wav)
 │   └── fonts/           # Fuentes (.ttf)
 ├── lib/                 # Bibliotecas de Allegro (Windows)
-├── Makefile             # Script de compilación
+├── Makefile             # Makefile para Windows
+├── Makefile.unix        # Makefile para macOS/Linux
 └── README.md            # Este archivo
 ```
 
@@ -69,9 +128,9 @@ space-invaders-c/
 
 ### Sistemas Operativos Soportados
 
-- ✅ **Windows** 10/11 (x64)
-- ✅ **macOS** 10.15+ (Catalina o superior)
-- ✅ **Linux** (Ubuntu, Debian, Fedora, Arch)
+- **Windows** 10/11 (x64)
+- **macOS** 10.15+ (Catalina o superior)
+- **Linux** (Ubuntu, Debian, Fedora, Arch)
 
 ---
 
@@ -96,20 +155,27 @@ pkg-config --modversion allegro-5
 
 ### En Windows
 
-#### Opción 1: Usar las bibliotecas incluidas (Recomendado)
+#### Opción 1: Instalación Automática (Recomendado)
 
-El proyecto ya incluye las DLLs necesarias de Allegro 5.2 en la carpeta `lib/`. Solo necesitas:
+Ejecuta el instalador automático desde CMD o PowerShell:
 
-1. **Instalar MinGW-w64**:
-   - Descarga desde: https://www.mingw-w64.org/downloads/
-   - O usa MSYS2: https://www.msys2.org/
+```cmd
+scripts\install-deps.bat
+```
 
-2. **Con MSYS2** (recomendado):
+Este script:
+- Detecta si MSYS2 está instalado
+- Si no lo está, te guía para instalarlo
+- Instala automáticamente GCC, Allegro 5 y Make
+
+#### Opción 2: Instalación Manual
+
+1. **Instalar MSYS2**:
+   - Descarga desde: https://www.msys2.org/
+
+2. **Abrir MSYS2 MINGW64 terminal e instalar dependencias**:
 ```bash
-# Abrir MSYS2 MINGW64 terminal
-pacman -S mingw-w64-x86_64-gcc
-pacman -S mingw-w64-x86_64-allegro
-pacman -S make
+pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-allegro make
 ```
 
 #### Opción 2: Instalación manual de Allegro
@@ -171,9 +237,9 @@ all: $(EXECUTABLE)
 
 # Regla para compilar el ejecutable
 $(EXECUTABLE): $(OBJS)
-	@echo "🎮 Compilando Space Invaders..."
+	@echo "Compilando Space Invaders..."
 	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(OBJS) $(ALLEGRO_LIBS)
-	@echo "✅ Compilación exitosa: ./$(EXECUTABLE)"
+	@echo "Compilacion exitosa: ./$(EXECUTABLE)"
 
 # Reglas para compilar objetos
 %.o: src/%.c
@@ -350,7 +416,7 @@ cd space-invaders-c/src
 
 3. **Usa el script de verificación:**
 ```bash
-./test_resources.sh
+scripts/test_resources.sh
 ```
 
 Este script te dirá si todos los recursos son accesibles desde la ubicación actual.
@@ -450,12 +516,12 @@ con o sin fines comerciales, siempre que se incluya este aviso de copyright.
 
 ### Áreas de Mejora
 
-- 🎨 Mejorar sprites y animaciones
-- 🔊 Añadir más efectos de sonido
-- 🎵 Implementar música de fondo
-- 🏆 Sistema de puntuaciones persistente
-- 🌐 Soporte para múltiples idiomas
-- 🎮 Soporte para gamepad/joystick
+- Mejorar sprites y animaciones
+- Añadir más efectos de sonido
+- Implementar música de fondo
+- Sistema de puntuaciones persistente
+- Soporte para múltiples idiomas
+- Soporte para gamepad/joystick
 
 ---
 
@@ -495,6 +561,8 @@ con o sin fines comerciales, siempre que se incluya este aviso de copyright.
 
 </div>
 
----
+-----
 
-*Última actualización: Octubre 2024*
+<p align="center">
+  <small>Desarrollado por <b>Edu Díaz</b> (<b>RGiskard7</b>) ❤️</small>
+</p>
