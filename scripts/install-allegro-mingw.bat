@@ -19,6 +19,58 @@ set "ALLEGRO_DIR=C:\allegro-%ALLEGRO_VERSION%-mingw-%MINGW_VERSION%"
 set "DOWNLOAD_URL=https://github.com/liballeg/allegro5/releases/download/%ALLEGRO_VERSION%/allegro-%ALLEGRO_VERSION%-mingw-%MINGW_VERSION%.zip"
 set "TEMP_ZIP=%TEMP%\allegro-mingw.zip"
 
+REM Verificar si MinGW/GCC está instalado
+echo [INFO] Verificando si MinGW/GCC está instalado...
+where gcc >nul 2>&1
+if %ERRORLEVEL% NEQ 0 (
+    echo [WARNING] MinGW/GCC no está instalado en tu sistema
+    echo.
+    echo ============================================
+    echo   INSTALACION DE MINGW REQUERIDA
+    echo ============================================
+    echo.
+    echo MinGW-w64 es necesario para compilar el proyecto en Windows.
+    echo.
+    echo Opciones:
+    echo   1. Abrir TDM-GCC (fácil para principiantes)
+    echo   2. Abrir MinGW-w64
+    echo   3. Abrir MSYS2 (recomendado - opción A)
+    echo   4. Salir
+    echo.
+    set /p MINGW_CHOICE="Selecciona una opción (1-4): "
+
+    if "%MINGW_CHOICE%"=="1" (
+        echo.
+        echo [INFO] Abriendo TDM-GCC...
+        echo Descarga e instala la versión 64-bit
+        echo.
+        start https://jmeubank.github.io/tdm-gcc/
+        pause
+        exit /b 1
+    ) else if "%MINGW_CHOICE%"=="2" (
+        echo.
+        echo [INFO] Abriendo MinGW-w64...
+        start https://www.mingw-w64.org/downloads/
+        pause
+        exit /b 1
+    ) else if "%MINGW_CHOICE%"=="3" (
+        echo.
+        echo [INFO] Redirigiendo al instalador de MSYS2...
+        call "%~dp0install-deps.bat"
+        exit /b 0
+    ) else if "%MINGW_CHOICE%"=="4" (
+        exit /b 0
+    ) else (
+        echo [ERROR] Opción no válida
+        pause
+        exit /b 1
+    )
+)
+
+echo [OK] MinGW/GCC encontrado
+gcc --version | findstr /C:"gcc"
+echo.
+
 echo [INFO] Este instalador descargará e instalará Allegro 5 para MinGW
 echo [INFO] Destino: %ALLEGRO_DIR%
 echo.
