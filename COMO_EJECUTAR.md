@@ -98,11 +98,24 @@ make -f Makefile.windows
 ./SpaceInvaders.exe
 ```
 
-### Opción B: Con MinGW + CMD (Si tienes Allegro instalado en C:\)
+### Opción B: Con MinGW + CMD
 
-#### Primera Vez
+#### Primera Vez - Instalación Automática (Nuevo)
 ```cmd
-:: Asegúrate de que MinGW esté en el PATH
+:: 1. Ejecutar instalador
+scripts\install-deps.bat
+
+:: Seleccionar opción 3: "Instalar Allegro para MinGW"
+
+:: 2. Compilar y ejecutar
+scripts\build.bat run
+```
+
+#### Primera Vez - Instalación Manual
+```cmd
+:: Si ya tienes MinGW instalado, descarga Allegro manualmente desde:
+:: https://github.com/liballeg/allegro5/releases
+:: Descomprime en C:\allegro-5.2.9.1-mingw-14.1.0
 
 :: Compilar
 mingw32-make
@@ -115,6 +128,9 @@ SpaceInvaders.exe
 ```cmd
 mingw32-make
 SpaceInvaders.exe
+
+:: O usar el script
+scripts\build.bat run
 ```
 
 ### Cambiar Tamaño de Ventana

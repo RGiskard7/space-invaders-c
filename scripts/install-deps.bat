@@ -70,15 +70,23 @@ echo Incluye GCC, herramientas de compilacion y el gestor de paquetes pacman.
 echo.
 echo %INFO% Opciones:
 echo.
+echo   A - Instalar MSYS2 (recomendado, todo automatico)
 echo   1. Instalar MSYS2 automaticamente (abre navegador)
-echo   2. Instalacion manual (instrucciones)
-echo   3. Salir (instalar despues)
+echo   2. Instalacion manual de MSYS2 (instrucciones)
 echo.
-set /p INSTALL_CHOICE="Selecciona una opcion (1/2/3): "
+echo   B - Usar MinGW sin MSYS2 (requiere instalacion manual)
+echo   3. Instalar Allegro para MinGW (descargar desde GitHub)
+echo   4. Instalacion manual de Allegro
+echo.
+echo   5. Salir (instalar despues)
+echo.
+set /p INSTALL_CHOICE="Selecciona una opcion (1-5): "
 
 if "%INSTALL_CHOICE%"=="1" goto :auto_install_msys2
 if "%INSTALL_CHOICE%"=="2" goto :manual_install_msys2
-if "%INSTALL_CHOICE%"=="3" goto :exit_script
+if "%INSTALL_CHOICE%"=="3" goto :install_allegro_mingw
+if "%INSTALL_CHOICE%"=="4" goto :manual_install_allegro
+if "%INSTALL_CHOICE%"=="5" goto :exit_script
 
 echo %ERROR% Opcion no valida
 goto :install_msys2_guide
@@ -112,6 +120,52 @@ echo    - Completa la instalacion
 echo.
 echo 4. Vuelve a ejecutar este script: install-deps.bat
 echo.
+pause
+goto :exit_script
+
+REM ============================================
+REM Instalación automática de Allegro para MinGW
+REM ============================================
+
+:install_allegro_mingw
+echo.
+echo ============================================
+echo   INSTALADOR DE ALLEGRO PARA MINGW
+echo ============================================
+echo.
+echo %INFO% Ejecutando instalador automático de Allegro...
+call "%~dp0install-allegro-mingw.bat"
+goto :end
+
+REM ============================================
+REM Instalación manual de Allegro
+REM ============================================
+
+:manual_install_allegro
+echo.
+echo ============================================
+echo   INSTALACION MANUAL DE ALLEGRO
+echo ============================================
+echo.
+echo Para compilar con MinGW sin MSYS2 necesitas:
+echo.
+echo 1. Compilador MinGW (ya lo tienes si llegaste aqui)
+echo 2. Allegro 5 precompilado
+echo.
+echo Pasos:
+echo.
+echo 1. Abre tu navegador
+echo.
+echo 2. Ve a: https://github.com/liballeg/allegro5/releases
+echo.
+echo 3. Descarga: allegro-5.2.9.1-mingw-14.1.0.zip
+echo.
+echo 4. Extrae el ZIP en: C:\
+echo    (debe quedar: C:\allegro-5.2.9.1-mingw-14.1.0)
+echo.
+echo 5. Compila el proyecto con: scripts\build.bat
+echo.
+start https://github.com/liballeg/allegro5/releases
 pause
 goto :exit_script
 
