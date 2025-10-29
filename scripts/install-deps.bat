@@ -49,7 +49,7 @@ REM Crear script temporal
 set "TEMP_SCRIPT=%TEMP%\install_deps_temp.sh"
 echo #!/bin/bash > "%TEMP_SCRIPT%"
 echo pacman -Sy --noconfirm >> "%TEMP_SCRIPT%"
-echo pacman -S --needed --noconfirm mingw-w64-x86_64-gcc mingw-w64-x86_64-allegro make >> "%TEMP_SCRIPT%"
+echo pacman -S --needed --noconfirm pkg-config mingw-w64-x86_64-gcc mingw-w64-x86_64-allegro make >> "%TEMP_SCRIPT%"
 
 echo Ejecutando instalacion en MSYS2...
 echo.
