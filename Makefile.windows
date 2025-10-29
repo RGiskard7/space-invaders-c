@@ -8,9 +8,9 @@ CPLUS=g++
 CFLAGS=-g -Wall -pedantic
 EXECUTABLE=SpaceInvaders.exe
 
-# Librerías de Allegro (Windows con MSYS2)
-# Asume que Allegro está instalado mediante pacman en MSYS2
-ALLEGRO_LIBS=-lallegro-5 -lallegro_main-5 -lallegro_image-5 -lallegro_font-5 -lallegro_ttf-5 -lallegro_primitives-5
+# Detectar librerías de Allegro con pkg-config
+ALLEGRO_LIBS=$(shell pkg-config --libs allegro-5 allegro_main-5 allegro_image-5 allegro_font-5 allegro_ttf-5 allegro_primitives-5)
+ALLEGRO_CFLAGS=$(shell pkg-config --cflags allegro-5)
 
 # Directorios
 SRC_DIR=src
@@ -40,7 +40,7 @@ $(EXECUTABLE): $(OBJS)
 # Regla genérica para compilar archivos .c a .o
 %.o: $(SRC_DIR)/%.c
 	@echo "$(COLOR_YELLOW)🔨 Compilando $<...$(COLOR_RESET)"
-	$(CC) -I $(INCLUDE_DIR) $(CFLAGS) -c $< -o $@
+	$(CC) $(ALLEGRO_CFLAGS) -I $(INCLUDE_DIR) $(CFLAGS) -c $< -o $@
 
 # Regla para limpiar archivos generados
 clean:
