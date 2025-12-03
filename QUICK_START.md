@@ -138,8 +138,9 @@ code space-invaders-c
 
 ### 3. Ejecutar con Debug
 
-- Presiona `F5` para compilar y ejecutar en modo debug
-- Presiona `Ctrl+F5` para ejecutar sin debug
+- **Windows/Linux/macOS**: Presiona `F5`.
+  - VS Code detectará tus cambios, recompilará automáticamente y lanzará el juego.
+- **Solo Compilar**: Presiona `Ctrl+Shift+B`.
 
 ### 4. Tareas disponibles en VSCode
 
