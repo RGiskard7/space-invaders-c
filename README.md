@@ -308,6 +308,15 @@ SpaceInvaders.exe
 SpaceInvaders.exe
 ```
 
+### 4. Ejecutar desde Visual Studio Code (Recomendado)
+
+Si usas VS Code, el proyecto ya está configurado para compilar y ejecutar fácilmente:
+
+1.  **Compilar y Jugar**: Pulsa `F5`.
+    *   Esto recompilará automáticamente cualquier cambio y lanzará el juego con el depurador.
+2.  **Solo Compilar**: Pulsa `Ctrl+Shift+B`.
+    *   Útil para verificar errores sin abrir el juego.
+
 ---
 
 ## 🎮 Controles del Juego
