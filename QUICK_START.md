@@ -44,46 +44,21 @@ cd space-invaders-c
 
 ### Windows
 
-#### Método 1: Instalación Automática (Recomendado)
+#### Instalación Automática (Legacy/Manual)
 
 ```cmd
 # 1. Clonar el proyecto
 git clone https://github.com/RGiskard7/space-invaders-c.git
 cd space-invaders-c
 
-# 2. Instalar dependencias automáticamente
+# 2. Instalar dependencias (Ejecutar como Administrador)
 scripts\install-deps.bat
 
-# 3. Una vez instalado, compilar y ejecutar desde MSYS2 MINGW64:
-make -f Makefile.unix
-./SpaceInvaders
+# 3. Compilar y ejecutar
+scripts\build.bat run
 ```
 
-#### Método 2: Instalación Manual con MSYS2
-
-```bash
-# 1. Descargar e instalar MSYS2 desde: https://www.msys2.org/
-
-# 2. Abrir "MSYS2 MINGW64" y ejecutar:
-pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-allegro make
-
-# 3. Navegar al proyecto
-cd /c/Users/TuUsuario/space-invaders-c
-
-# 4. Compilar y ejecutar
-./build.sh run
-```
-
-#### Método 2: Usando MinGW y CMD
-
-```cmd
-:: 1. Instalar MinGW desde: https://www.mingw-w64.org/
-
-:: 2. Abrir CMD en la carpeta del proyecto
-
-:: 3. Compilar y ejecutar
-build.bat run
-```
+Este script instalará MinGW y Allegro en `C:\mingw64` y `C:\allegro-5.2.9.1-mingw-14.1.0`.
 
 ---
 
@@ -127,6 +102,8 @@ gcc -o SpaceInvaders *.o $(pkg-config --libs allegro-5 allegro_main-5 allegro_im
 ```
 
 ### En Windows (con MinGW):
+
+Asegúrate de que `C:\mingw64\bin` esté en tu PATH.
 
 ```cmd
 mingw32-make

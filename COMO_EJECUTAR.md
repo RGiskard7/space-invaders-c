@@ -48,89 +48,35 @@ make -f Makefile.unix
 
 ## 🪟 Windows
 
-### Opción A: Con MSYS2 (Recomendado)
+### Opción A: Script Automático (Recomendado)
 
-#### Primera Vez - Instalación Automática
+#### Primera Vez - Instalación
 ```cmd
-:: Ejecutar el instalador automático (detecta e instala MSYS2 + dependencias)
+:: Ejecutar como Administrador
 scripts\install-deps.bat
 ```
 
-El script automáticamente:
-- Detecta si MSYS2 está instalado
-- Si no lo está, te guía para instalarlo
-- Instala GCC, Allegro 5 y Make automáticamente
+El script descargará e instalará:
+- **MinGW 14.1.0** en `C:\mingw64`
+- **Allegro 5.2.9** en `C:\allegro-5.2.9.1-mingw-14.1.0`
 
-#### Primera Vez - Instalación Manual
-```bash
-# 1. Instalar MSYS2 desde: https://www.msys2.org/
-
-# 2. Abrir "MSYS2 MINGW64" y ejecutar:
-pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-allegro make
-
-# 3. Navegar al proyecto (varias opciones):
-# Opción A: Si está en tu home
-cd ~
-
-# Opción B: Si está en OneDrive
-cd /c/Users/TuUsuario/OneDrive/
-
-# Opción C: Si está en Escritorio
-cd /c/Users/TuUsuario/Desktop/
-
-# Opción D: Buscar el proyecto
-find /c -name "space-invaders-c" -type d 2>/dev/null
-# Luego cd a la ruta encontrada
-
-cd espacio-invaders-c  # O como se llame tu carpeta
-
-# 4. Compilar (usa Makefile.windows, NO Makefile.unix)
-make -f Makefile.windows
-
-# 5. Ejecutar
-./SpaceInvaders.exe
-```
-
-#### Ejecuciones Siguientes
-```bash
-# En la terminal MSYS2 MINGW64:
-make -f Makefile.windows
-./SpaceInvaders.exe
-```
-
-### Opción B: Con MinGW + CMD
-
-#### Primera Vez - Instalación Automática (Nuevo)
+#### Ejecución
 ```cmd
-:: 1. Ejecutar instalador
-scripts\install-deps.bat
-
-:: Seleccionar opción 3: "Instalar Allegro para MinGW"
-
-:: 2. Compilar y ejecutar
 scripts\build.bat run
 ```
 
+### Opción B: Manual
+
 #### Primera Vez - Instalación Manual
-```cmd
-:: Si ya tienes MinGW instalado, descarga Allegro manualmente desde:
-:: https://github.com/liballeg/allegro5/releases
-:: Descomprime en C:\allegro-5.2.9.1-mingw-14.1.0
+1. Descarga **MinGW 14.1.0** (WinLibs) y extráelo en `C:\mingw64`.
+2. Descarga **Allegro 5.2.9** y extráelo en `C:\allegro-5.2.9.1-mingw-14.1.0`.
 
-:: Compilar
-mingw32-make
+#### Compilación y Ejecución
+Asegúrate de que `C:\mingw64\bin` esté en tu PATH.
 
-:: Ejecutar
-SpaceInvaders.exe
-```
-
-#### Ejecuciones Siguientes
 ```cmd
 mingw32-make
 SpaceInvaders.exe
-
-:: O usar el script
-scripts\build.bat run
 ```
 
 ### Cambiar Tamaño de Ventana

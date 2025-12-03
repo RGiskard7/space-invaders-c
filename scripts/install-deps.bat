@@ -1,84 +1,77 @@
 @echo off
-REM Instalador de dependencias para Space Invaders en Windows
-REM Versión simplificada y funcional
-
 setlocal enabledelayedexpansion
 
-cd /d "%~dp0\.."
-
 echo ===================================================
-echo    Space Invaders - Instalador de Dependencias
+echo    Space Invaders - Instalador Legacy (Manual)
 echo ===================================================
 echo.
+echo Este script descargara e instalara MinGW y Allegro en:
+echo   - C:\mingw64
+echo   - C:\allegro-5.2.9.1-mingw-14.1.0
+echo.
+echo NOTA: Requiere permisos de administrador para escribir en C:\
+echo.
 
-REM Verificar si MSYS2 está instalado
-if exist "C:\msys64\mingw64\bin\gcc.exe" (
-    set "MSYS2_PATH=C:\msys64"
-    set "MSYS2_FOUND=1"
-) else if exist "C:\msys32\mingw64\bin\gcc.exe" (
-    set "MSYS2_PATH=C:\msys32"
-    set "MSYS2_FOUND=1"
+REM URLs de descarga (Direct links)
+REM WinLibs GCC 14.1.0 (UCRT, POSIX, SEH)
+set "MINGW_URL=https://github.com/brechtsanders/winlibs_mingw/releases/download/14.1.0posix-18.1.5-11.0.1-ucrt-r1/winlibs-x86_64-posix-seh-gcc-14.1.0-mingw-w64ucrt-11.0.1-r1.zip"
+REM Allegro 5.2.9.0 (Compatible binaries) - Renombraremos la carpeta
+set "ALLEGRO_URL=https://github.com/liballeg/allegro5/releases/download/5.2.9.0/allegro-x86_64-w64-mingw32-gcc-13.2.0-posix-seh-static-5.2.9.0.zip"
+
+REM 1. Instalar MinGW
+if exist "C:\mingw64\bin\gcc.exe" (
+    echo [OK] MinGW ya esta instalado en C:\mingw64
 ) else (
-    set "MSYS2_FOUND=0"
+    echo [INFO] Descargando MinGW 14.1.0...
+    curl -L -o mingw.zip "%MINGW_URL%"
+    
+    echo [INFO] Extrayendo MinGW en C:\ ...
+    tar -xf mingw.zip -C C:\
+    
+    del mingw.zip
+    echo [OK] MinGW instalado.
 )
 
-if %MSYS2_FOUND%==1 (
-    echo [OK] MSYS2 encontrado en: %MSYS2_PATH%
-    echo.
-    goto :install_packages
+REM 2. Instalar Allegro
+if exist "C:\allegro-5.2.9.1-mingw-14.1.0\include\allegro5\allegro.h" (
+    echo [OK] Allegro ya esta instalado en C:\allegro-5.2.9.1-mingw-14.1.0
+) else (
+    echo [INFO] Descargando Allegro 5.2.9...
+    curl -L -o allegro.zip "%ALLEGRO_URL%"
+    
+    echo [INFO] Extrayendo Allegro...
+    tar -xf allegro.zip
+    
+    REM Renombrar la carpeta extraida al nombre esperado por el proyecto
+    if exist "allegro" (
+        move "allegro" "C:\allegro-5.2.9.1-mingw-14.1.0"
+        echo [OK] Allegro instalado.
+    ) else (
+        echo [ERROR] No se pudo encontrar la carpeta extraida de Allegro.
+        echo Verifica si se extrajo con otro nombre.
+        pause
+        exit /b 1
+    )
+    
+    del allegro.zip
 )
 
-REM MSYS2 no encontrado
-echo [ADVERTENCIA] MSYS2 no esta instalado
-echo.
-echo Para instalar MSYS2:
-echo   1. Ve a: https://www.msys2.org/
-echo   2. Descarga e instala el MSYS2
-echo   3. Ejecuta este script nuevamente
-echo.
-echo Abriendo pagina de MSYS2...
-start https://www.msys2.org/
-pause
-exit /b 1
-
-:install_packages
-echo [INFO] Instalando paquetes necesarios...
-echo.
-
-REM Crear script temporal
-set "TEMP_SCRIPT=%TEMP%\install_deps_temp.sh"
-echo #!/bin/bash > "%TEMP_SCRIPT%"
-echo pacman -Sy --noconfirm >> "%TEMP_SCRIPT%"
-echo pacman -S --needed --noconfirm pkg-config mingw-w64-x86_64-gcc mingw-w64-x86_64-allegro make >> "%TEMP_SCRIPT%"
-
-echo Ejecutando instalacion en MSYS2...
-echo.
-echo IMPORTANTE: Se abrira MSYS2 y deberas ejecutar manualmente:
-echo.
-echo   bash '%TEMP_SCRIPT%'
-echo.
-echo Presiona Enter para continuar...
-pause
-
-"%MSYS2_PATH%\msys2_shell.cmd" -mingw64
-
-REM Limpiar después de que el usuario presione Enter
-echo.
-echo Presiona Enter para continuar...
-pause
-
-del "%TEMP_SCRIPT%"
-
+REM 3. Configurar PATH (Temporal para esta sesion y sugerencia permanente)
 echo.
 echo ===================================================
-echo   SIGUIENTE PASO
+echo    CONFIGURACION FINAL
 echo ===================================================
 echo.
-echo Si instalaste correctamente los paquetes en MSYS2,
-echo ahora puedes compilar con:
-echo   scripts\build.bat run
+echo Para que todo funcione, C:\mingw64\bin debe estar en tu PATH.
 echo.
-echo Si necesitas ayuda, lee EMPEZAR_AQUI.md
-echo.
+echo Agregando temporalmente al PATH actual...
+set "PATH=C:\mingw64\bin;%PATH%"
 
+echo.
+echo Verificando versiones:
+gcc --version
+echo.
+echo [EXITO] Instalacion completada.
+echo Ahora puedes ejecutar: scripts\build.bat run
+echo.
 pause

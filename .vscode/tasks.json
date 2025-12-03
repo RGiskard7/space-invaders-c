@@ -2,134 +2,78 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build Space Invaders (macOS/Linux)",
-            "type": "shell",
-            "command": "make",
+            "label": "Build",
+            "type": "cppbuild",
+            "command": "g++",
             "args": [
-                "-f",
-                "Makefile.unix"
+                "-g",
+                "${workspaceFolder}\\src\\*.c", // Ruta a todos los archivos .cpp en src
+                "-o",
+                "${workspaceFolder}\\bin\\SpaceInvaders_vsc.exe",
+                "-I",
+                "${workspaceFolder}\\include",
+                "-I",
+                "C:\\mingw64\\include",
+                "-I",
+                "C:\\allegro-5.2.9.1-mingw-14.1.0\\include",
+                "-L",
+                "C:\\mingw64\\lib",
+                "-L",
+                "C:\\allegro-5.2.9.1-mingw-14.1.0\\lib",
+                "-lallegro_monolith",
+                "-lallegro_main",
+                "-lallegro_image",
+                "-lallegro_font",
+                "-lallegro_ttf"
             ],
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": true
-            },
-            "problemMatcher": ["$gcc"],
-            "detail": "Compila el proyecto usando Makefile.unix"
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "detail": "Generated task for building Allegro projects"
         },
         {
-            "label": "Build Space Invaders (Windows)",
-            "type": "shell",
-            "command": "mingw32-make",
+            "type": "cppbuild",
+            "label": "C/C++: cl.exe compilar archivo activo",
+            "command": "cl.exe",
+            "args": [
+                "/Zi",
+                "/EHsc",
+                "/nologo",
+                "/Fe${fileDirname}\\${fileBasenameNoExtension}.exe",
+                "${file}"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$msCompile"
+            ],
             "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": true
-            },
-            "problemMatcher": ["$gcc"],
-            "detail": "Compila el proyecto usando Makefile (Windows)"
+            "detail": "Tarea generada por el depurador."
         },
         {
-            "label": "Build and Run (macOS/Linux)",
-            "type": "shell",
-            "command": "./scripts/build.sh",
-            "args": ["run"],
-            "group": "test",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": true,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": true
-            },
-            "problemMatcher": ["$gcc"],
-            "detail": "Compila y ejecuta el juego en macOS/Linux"
-        },
-        {
-            "label": "Build and Run (Windows)",
-            "type": "shell",
-            "command": "scripts\\build.bat",
-            "args": ["run"],
-            "group": "test",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": true,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": true
-            },
-            "problemMatcher": ["$gcc"],
-            "detail": "Compila y ejecuta el juego en Windows"
-        },
-        {
-            "label": "Clean Build Files (macOS/Linux)",
-            "type": "shell",
-            "command": "make",
+            "type": "cppbuild",
+            "label": "C/C++: g++.exe compilar archivo activo",
+            "command": "C:\\msys64\\ucrt64\\bin\\g++.exe",
             "args": [
-                "-f",
-                "Makefile.unix",
-                "clean"
+                "-fdiagnostics-color=always",
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe"
             ],
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
+            "options": {
+                "cwd": "C:\\msys64\\ucrt64\\bin"
             },
-            "problemMatcher": [],
-            "detail": "Limpia archivos de compilación (.o y ejecutable)"
-        },
-        {
-            "label": "Clean Build Files (Windows)",
-            "type": "shell",
-            "command": "mingw32-make",
-            "args": ["clean"],
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": false
-            },
-            "problemMatcher": [],
-            "detail": "Limpia archivos de compilación (.o y ejecutable)"
-        },
-        {
-            "label": "Check Dependencies",
-            "type": "shell",
-            "command": "make",
-            "args": [
-                "-f",
-                "Makefile.unix",
-                "check-deps"
+            "problemMatcher": [
+                "$gcc"
             ],
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": true
-            },
-            "problemMatcher": [],
-            "detail": "Verifica que todas las dependencias estén instaladas"
+            "group": "build",
+            "detail": "Tarea generada por el depurador."
         }
     ]
 }
-

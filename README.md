@@ -155,28 +155,23 @@ pkg-config --modversion allegro-5
 
 ### En Windows
 
-#### Opción 1: Instalación Automática (Recomendado)
+#### Opción 1: Instalación Automática (Legacy/Manual)
 
-Ejecuta el instalador automático desde CMD o PowerShell:
+Ejecuta el instalador desde CMD o PowerShell **como Administrador**:
 
 ```cmd
 scripts\install-deps.bat
 ```
 
-Este script:
-- Detecta si MSYS2 está instalado
-- Si no lo está, te guía para instalarlo
-- Instala automáticamente GCC, Allegro 5 y Make
+Este script descargará e instalará automáticamente:
+- **MinGW 14.1.0** en `C:\mingw64`
+- **Allegro 5.2.9** en `C:\allegro-5.2.9.1-mingw-14.1.0`
 
 #### Opción 2: Instalación Manual
 
-1. **Instalar MSYS2**:
-   - Descarga desde: https://www.msys2.org/
-
-2. **Abrir MSYS2 MINGW64 terminal e instalar dependencias**:
-```bash
-pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-allegro make
-```
+Si prefieres hacerlo tú mismo:
+1. Descarga **MinGW 14.1.0** (WinLibs) y extráelo en `C:\mingw64`.
+2. Descarga **Allegro 5.2.9** (MinGW 13.2.0 compatible) y extráelo en `C:\allegro-5.2.9.1-mingw-14.1.0`.
 
 #### Opción 2: Instalación manual de Allegro
 
@@ -284,25 +279,19 @@ gcc -o SpaceInvaders main.o game.o bullet.o ship.o martian.o object.o \
 
 #### En Windows
 
-**Con MinGW (CMD o PowerShell)**:
+**Opción A: Script Automático (Recomendado)**
 
-```bash
-# Asegúrate de estar en el directorio raíz del proyecto
-mingw32-make
-
-# O si instalaste make:
-make
+```cmd
+scripts\build.bat run
 ```
 
-**Si el Makefile falla**, edita las líneas 8-12 del `Makefile` para ajustar las rutas de Allegro:
+**Opción B: Manual (MinGW)**
 
-```makefile
-ALLEGRO_VERSION=5.2.9.1
-MINGW_VERSION=14.1.0
-FOLDER=C:
+Asegúrate de que `C:\mingw64\bin` esté en tu PATH y ejecuta:
 
-FOLDER_NAME=\allegro-$(ALLEGRO_VERSION)-mingw-$(MINGW_VERSION)
-PATH_ALLEGRO=$(FOLDER)$(FOLDER_NAME)
+```cmd
+mingw32-make
+SpaceInvaders.exe
 ```
 
 ### 3. Ejecutar el Juego

@@ -1,17 +1,33 @@
 {
   "configurations": [
     {
-      "name": "macos-clang-arm64",
+      "name": "Win32",
       "includePath": [
-        "${workspaceFolder}/**"
+        "${workspaceFolder}/include",
+        "C:/Users/elija/Desktop/SpaceInvaders2.0",
+        "C:/mingw64/include",
+        "C:/allegro-5.2.9.1-mingw-14.1.0/include"
       ],
-      "compilerPath": "/usr/bin/clang",
-      "cStandard": "${default}",
-      "cppStandard": "${default}",
-      "intelliSenseMode": "macos-clang-arm64",
-      "compilerArgs": [
-        ""
-      ]
+      "defines": [
+        "_DEBUG",
+        "UNICODE",
+        "_UNICODE"
+      ],
+      "windowsSdkVersion": "10.0.22621.0",
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      //"intelliSenseMode": "windows-msvc-x64",
+      "intelliSenseMode": "gcc-x64",
+      "configurationProvider": "ms-vscode.makefile-tools",
+      "browse": {
+        "path": [
+          "${workspaceFolder}/**", // Todos los archivos de la carpeta del proyecto recursivamente
+          "C:/mingw64/include",
+          "C:/allegro-5.2.9.1-mingw-14.1.0/include"
+        ],
+        "limitSymbolsToIncludedHeaders": true,
+        "databaseFilename": ""
+      }
     }
   ],
   "version": 4

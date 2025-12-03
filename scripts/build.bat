@@ -1,68 +1,66 @@
 @echo off
-REM Script de compilacion para Space Invaders en Windows
-REM Versión corregida y simplificada
+REM Script de compilacion Legacy para Space Invaders
+REM Usa el Makefile original y rutas manuales
 
 cd /d "%~dp0\.."
 
 echo ===================================================
-echo        Compilando Space Invaders
+echo        Compilando Space Invaders (Legacy)
 echo ===================================================
 echo.
 
-REM Intentar compilar con los Makefiles disponibles
-if exist Makefile.windows (
-    echo [INFO] Usando Makefile.windows
-    make -f Makefile.windows
-) else if exist Makefile (
-    echo [INFO] Usando Makefile
-    where mingw32-make >nul 2>&1
-    if %ERRORLEVEL% EQU 0 (
-        mingw32-make -f Makefile
-    ) else (
-        make -f Makefile
-    )
-) else (
-    echo [ERROR] No se encontro Makefile
-    echo.
-    echo Instala MSYS2 desde: https://www.msys2.org/
-    echo O ejecuta primero: scripts\install-deps.bat
-    echo.
+REM Asegurar que MinGW esta en el PATH
+set "PATH=C:\mingw64\bin;%PATH%"
+
+REM Verificar herramientas
+where gcc >nul 2>&1
+if %ERRORLEVEL% NEQ 0 (
+    echo [ERROR] No se encontro gcc.
+    echo Ejecuta scripts\install-deps.bat primero.
     pause
     exit /b 1
 )
+
+where mingw32-make >nul 2>&1
+if %ERRORLEVEL% NEQ 0 (
+    echo [ERROR] No se encontro mingw32-make.
+    echo Ejecuta scripts\install-deps.bat primero.
+    pause
+    exit /b 1
+)
+
+REM Compilar usando el Makefile original (sin extension)
+echo [INFO] Ejecutando mingw32-make -f Makefile...
+mingw32-make -f Makefile
 
 if %ERRORLEVEL% NEQ 0 (
     echo.
-    echo [ERROR] La compilacion fallo
-    echo.
-    echo Posibles soluciones:
-    echo   1. Ejecuta scripts\install-deps.bat
-    echo   2. Lee EMPEZAR_AQUI.md para mas ayuda
-    echo.
+    echo [ERROR] La compilacion fallo.
     pause
     exit /b 1
 )
 
 echo.
-echo ===================================================
-echo   [OK] Compilacion exitosa
-echo ===================================================
+echo [OK] Compilacion exitosa.
 echo.
 
 if "%1"=="run" (
     echo Iniciando juego...
-    echo.
-    if exist SpaceInvaders.exe (
-        SpaceInvaders.exe
-    ) else if exist SpaceInvaders (
-        ./SpaceInvaders
-    ) else (
-        echo [ERROR] No se encontro el ejecutable
+    REM Necesitamos la DLL de Allegro junto al ejecutable o en el PATH
+    REM Como es linkado estatico o monolitico, verificamos si hace falta copiar DLLs
+    
+    REM Si el Makefile linka dinamicamente (-lallegro_monolith), necesitamos la DLL.
+    REM Copiamos la DLL si no existe
+    if not exist "allegro_monolith-5.2.dll" (
+        if exist "C:\allegro-5.2.9.1-mingw-14.1.0\bin\allegro_monolith-5.2.dll" (
+            copy "C:\allegro-5.2.9.1-mingw-14.1.0\bin\allegro_monolith-5.2.dll" . >nul
+            echo [INFO] DLL copiada.
+        )
     )
+
+    SpaceInvaders.exe
 ) else (
-    echo Para ejecutar: SpaceInvaders.exe
-    echo O: scripts\build.bat run
-    echo.
+    echo Para ejecutar: scripts\build.bat run
 )
 
 pause

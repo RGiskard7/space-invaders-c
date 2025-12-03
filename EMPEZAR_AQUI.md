@@ -32,42 +32,28 @@ scripts/build.sh run
 
 ## 🪟 Windows
 
-### ✅ MÉTODO RECOMENDADO: MSYS2
+### ✅ MÉTODO RECOMENDADO: Script Automático
 
 **Pasos:**
 
-1. **Instala MSYS2** desde: https://www.msys2.org/
-   - Descarga el instalador
-   - Instala en C:\msys64 (por defecto)
+1. **Ejecuta el instalador** (como Administrador):
+   ```cmd
+   scripts\install-deps.bat
+   ```
+   Esto instalará MinGW y Allegro en `C:\mingw64` y `C:\allegro-5.2.9.1-mingw-14.1.0`.
 
-2. **Abre MSYS2 MINGW64** y ejecuta:
-   ```bash
-   pacman -Sy
-   pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-allegro make
+2. **Compila y ejecuta**:
+   ```cmd
+   scripts\build.bat run
    ```
 
-3. **Compila y ejecuta** desde MSYS2 MINGW64:
-   ```bash
-   cd /c/ruta/a/tu/proyecto/space-invaders-c
-   make -f Makefile.windows
-   ./SpaceInvaders.exe
-   ```
+### ⚠️ Instalación Manual:
 
-**O desde CMD de Windows:**
-1. Ejecuta: `scripts\build.bat`
-2. Si falla, lee las instrucciones que muestra
-
-### ⚠️ Si MSYS2 da problemas:
-
-**Opción Alternativa:**
-
-1. Descarga Allegro desde aquí: https://github.com/liballeg/allegro5/releases
-2. Busca: `allegro-5.2.9.1-mingw-14.1.0.zip`
-3. Descárgalo y descomprime en `C:\allegro-5.2.9.1-mingw-14.1.0`
-4. Ejecuta:
-   ```
-   mingw32-make
-   SpaceInvaders.exe
+1. Descarga **MinGW 14.1.0** (WinLibs) y extráelo en `C:\mingw64`.
+2. Descarga **Allegro 5.2.9** y extráelo en `C:\allegro-5.2.9.1-mingw-14.1.0`.
+3. Ejecuta:
+   ```cmd
+   scripts\build.bat run
    ```
 
 ---
