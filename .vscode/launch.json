@@ -5,7 +5,7 @@
             "name": "Debug (Manual Config)",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}\\bin\\SpaceInvaders_vsc.exe",
+            "program": "${workspaceFolder}\\SpaceInvaders.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

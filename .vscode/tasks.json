@@ -9,7 +9,7 @@
                 "-g",
                 "${workspaceFolder}\\src\\*.c", // Ruta a todos los archivos .cpp en src
                 "-o",
-                "${workspaceFolder}\\bin\\SpaceInvaders_vsc.exe",
+                "${workspaceFolder}\\SpaceInvaders.exe",
                 "-I",
                 "${workspaceFolder}\\include",
                 "-I",
