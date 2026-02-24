@@ -1,17 +1,19 @@
 #ifndef SHIP_H
-#define	SHIP_H
+#define SHIP_H
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
+
+#include "bullet.h"
 #include "config.h"
 #include "types.h"
-#include "bullet.h"
 
-#define MAX_SHIP_BULLETS 50
+
+#define MAX_SHIP_BULLETS 1
 #define SHIP_WIDTH 30
 #define SHIP_HEIGHT 20
 
@@ -20,7 +22,8 @@ typedef struct _ship SHIP;
 /**
  * @brief Creates a new ship with the specified parameters.
  */
-SHIP *ship_create(ALLEGRO_BITMAP *bitmap, int width, int height, float x, float y, int dir, int life);
+SHIP *ship_create(ALLEGRO_BITMAP *bitmap, int width, int height, float x,
+                  float y, int dir, int life);
 
 /**
  * @brief Destroys the ship, freeing its resources.

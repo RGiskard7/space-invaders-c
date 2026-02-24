@@ -243,12 +243,12 @@ int bullet_get_source_x(BULLET *bullet) {
  * @param source_y Source y-coordinate.
  * @return STATUS code (OK on success, ERROR if bullet is NULL).
  */
-STATUS bullet_set_source_y(BULLET *bullet, int source_x) {
+STATUS bullet_set_source_y(BULLET *bullet, int source_y) {
     if (!bullet) {
         return ERROR;
     }
 
-    bullet->source_x = source_x;
+    bullet->source_y = source_y;
 
     return OK;
 }
@@ -264,7 +264,7 @@ int bullet_get_source_y(BULLET *bullet) {
         return ERROR;
     }
 
-    return bullet->source_x;
+    return bullet->source_y;
 }
 
 /**
