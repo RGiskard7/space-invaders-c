@@ -69,6 +69,11 @@ struct _game {
   ALLEGRO_SAMPLE *samples[10];             ///< Sound samples for the game
 
   int total_score;                         ///< Player's total score
+  int level;                               ///< Current wave/level number (starts at 1)
+  int level_y_offset;                      ///< Extra Y pixels enemies start lower each wave
+  int high_score;                          ///< All-time high score (persisted to file)
+  bool paused;                             ///< Pause state
+  bool p_was_down;                         ///< Previous P-key state for edge-detection
   bool ship_exploding;                     ///< Flag for ship death animation
   int ship_explosion_timer;                ///< Timer for death animation
   GAME_STATE state;                        ///< Current game state
@@ -103,6 +108,14 @@ STATUS game_print_other_elements(GAME *game);                     /**< Renders o
 STATUS game_print_score(GAME *game);                              /**< Renders the score */
 STATUS game_print_life(GAME *game);                               /**< Renders the player's lives */
 STATUS game_print_floor(GAME *game);                              /**< Renders the floor */
+
+static STATUS game_load_highscore(GAME *game);                    /**< Loads high score from file */
+static STATUS game_save_highscore(GAME *game);                    /**< Saves high score to file if new record */
+static STATUS game_reset_enemies(GAME *game);                     /**< Destroys + recreates full enemy grid */
+static STATUS game_reset_bunkers(GAME *game);                     /**< Destroys + recreates all bunker parts */
+static STATUS game_reset_ship(GAME *game);                        /**< Resets ship position, lives, bullets */
+static STATUS game_next_level(GAME *game);                        /**< Advances to next wave */
+static STATUS game_full_reset(GAME *game);                        /**< Full game restart (score + level reset) */
 
 // Game Management Functions
 
@@ -171,6 +184,11 @@ GAME *game_create() {
   new_game->num_orphan_bullets = 0;
   new_game->num_objects = 0;
   new_game->total_score = 0;
+  new_game->level = 1;
+  new_game->level_y_offset = 0;
+  new_game->high_score = 0;
+  new_game->paused = false;
+  new_game->p_was_down = false;
 
   new_game->ufo = NULL;
   new_game->ufo_timer = 0;
@@ -300,6 +318,254 @@ STATUS game_destroy(GAME *game) {
   return OK;
 }
 
+// =========================================================================
+// Helper Functions: Persistence and Reset
+// =========================================================================
+
+/**
+ * @brief Loads the high score from the persistence file.
+ *
+ * @param game Pointer to the GAME instance.
+ * @return OK always (missing file is silently ignored).
+ */
+static STATUS game_load_highscore(GAME *game) {
+  if (!game) return ERROR;
+
+  FILE *f = fopen(HIGHSCORE_FILE, "r");
+  if (f) {
+    fscanf(f, "%d", &game->high_score);
+    fclose(f);
+  }
+
+  return OK;
+}
+
+/**
+ * @brief Saves the high score to the persistence file if a new record is set.
+ *
+ * @param game Pointer to the GAME instance.
+ * @return OK if successful, ERROR if game is NULL.
+ */
+static STATUS game_save_highscore(GAME *game) {
+  if (!game) return ERROR;
+
+  if (game->total_score > game->high_score) {
+    game->high_score = game->total_score;
+    FILE *f = fopen(HIGHSCORE_FILE, "w");
+    if (f) {
+      fprintf(f, "%d", game->high_score);
+      fclose(f);
+    }
+  }
+
+  return OK;
+}
+
+/**
+ * @brief Destroys all current enemies, orphan bullets, and objects, then
+ * recreates the full 11x5 martian formation.
+ *
+ * @param game Pointer to the GAME instance.
+ * @return OK if successful, ERROR on allocation failure.
+ */
+static STATUS game_reset_enemies(GAME *game) {
+  if (!game) return ERROR;
+
+  for (int i = 0; i < game->num_enemies_alive; i++) {
+    if (game->enemy[i] != NULL) {
+      mart_destroy(game->enemy[i]);
+      game->enemy[i] = NULL;
+    }
+  }
+
+  for (int i = game->num_orphan_bullets - 1; i >= 0; i--) {
+    bullet_destroy(game_extract_orphan_bullet_at(game, i));
+  }
+
+  for (int i = game->num_objects - 1; i >= 0; i--) {
+    obj_destroy(game_extract_object_at(game, i));
+  }
+
+  game->enemies_dir = RIGHT;
+  game->enemy_shoot_timer = 0;
+  game->enemy_move_timer = 0;
+  game->enemy_animation_timer = 0;
+
+  for (int y = 0, i = 0; y < NUM_ENEMY_Y; y++) {
+    int source_y, score;
+
+    if (i <= 10) {
+      source_y = 0;
+      score = POINTS_01;
+    } else if (i > 10 && i <= 31) {
+      source_y = 1;
+      score = POINTS_02;
+    } else {
+      source_y = 2;
+      score = POINTS_03;
+    }
+
+    for (int x = 0; x < NUM_ENEMY_X; x++) {
+      game->enemy[i] = mart_create(game->martian_img, MART_WIDTH, MART_HEIGHT,
+                                   MART_INIT_POS_X + x * SPACE_BTW_MARTIANS_X,
+                                   MART_INIT_POS_Y + game->level_y_offset + y * SPACE_BTW_MARTIANS_Y,
+                                   &(game->enemies_dir), score);
+      if (!game->enemy[i]) {
+        return ERROR;
+      }
+      mart_set_source_y(game->enemy[i], source_y);
+      i++;
+    }
+  }
+
+  game->num_enemies_alive = MAX_ENEMIES;
+  game->num_enemies_destroyed = 0;
+  game->last_enemy_rand = 0;
+
+  return OK;
+}
+
+/**
+ * @brief Destroys all bunker parts and recreates them in their original
+ * positions.
+ *
+ * @param game Pointer to the GAME instance.
+ * @return OK if successful, ERROR on allocation failure.
+ */
+static STATUS game_reset_bunkers(GAME *game) {
+  if (!game) return ERROR;
+
+  for (int i = 0; i < NUM_BUNKERS * BUNKER_PARTS; i++) {
+    if (game->bunkers[i] != NULL) {
+      bunker_destroy(game->bunkers[i]);
+      game->bunkers[i] = NULL;
+    }
+  }
+
+  float bunker_spacing = (DISPLAY_WIDTH - 120) / NUM_BUNKERS;
+  for (int i = 0; i < NUM_BUNKERS; i++) {
+    float bx = 60 + i * bunker_spacing;
+    float by = BUNKER_INIT_POS_Y;
+
+    game->bunkers[i * BUNKER_PARTS + 0] =
+        bunker_create(game->bunker_img, 0, 0, BUNKER_PART_WIDTH, BUNKER_PART_HEIGHT, bx, by);
+    game->bunkers[i * BUNKER_PARTS + 1] =
+        bunker_create(game->bunker_img, 0, 4, BUNKER_PART_WIDTH, BUNKER_PART_HEIGHT, bx + BUNKER_PART_WIDTH, by);
+    game->bunkers[i * BUNKER_PARTS + 2] =
+        bunker_create(game->bunker_img, 0, 2, BUNKER_PART_WIDTH, BUNKER_PART_HEIGHT, bx + BUNKER_PART_WIDTH * 2, by);
+    game->bunkers[i * BUNKER_PARTS + 3] =
+        bunker_create(game->bunker_img, 0, 1, BUNKER_PART_WIDTH, BUNKER_PART_HEIGHT, bx, by + BUNKER_PART_HEIGHT);
+    game->bunkers[i * BUNKER_PARTS + 4] =
+        bunker_create(game->bunker_img, 0, 3, BUNKER_PART_WIDTH, BUNKER_PART_HEIGHT, bx + BUNKER_PART_WIDTH * 2, by + BUNKER_PART_HEIGHT);
+
+    for (int j = 0; j < BUNKER_PARTS; j++) {
+      if (!game->bunkers[i * BUNKER_PARTS + j]) {
+        return ERROR;
+      }
+    }
+  }
+
+  return OK;
+}
+
+/**
+ * @brief Destroys all ship bullets, resets ship position, life, and
+ * explosion state.
+ *
+ * @param game Pointer to the GAME instance.
+ * @return OK if successful, ERROR if game or ship is NULL.
+ */
+static STATUS game_reset_ship(GAME *game) {
+  if (!game || !game->ship) return ERROR;
+
+  for (int i = ship_get_num_shots(game->ship) - 1; i >= 0; i--) {
+    bullet_destroy(ship_extract_bullet_at(game->ship, i));
+  }
+
+  ship_set_x(game->ship, SHIP_INIT_POS_X);
+  ship_set_y(game->ship, SHIP_INIT_POS_Y);
+  ship_set_life(game->ship, SHIP_LIFE);
+  ship_set_source_x(game->ship, 0);
+  game->ship_exploding = false;
+  game->ship_explosion_timer = 0;
+
+  return OK;
+}
+
+/**
+ * @brief Advances to the next wave: increments level, resets enemies.
+ * Bunkers are NOT reset (authentic arcade behavior).
+ *
+ * @param game Pointer to the GAME instance.
+ * @return OK if successful, ERROR on failure.
+ */
+static STATUS game_next_level(GAME *game) {
+  if (!game) return ERROR;
+
+  if (game->ufo) {
+    al_stop_samples();
+    obj_destroy(game->ufo);
+    game->ufo = NULL;
+  }
+
+  game->level++;
+
+  // En el original, los enemigos empiezan una fila más abajo cada oleada
+  game->level_y_offset = (game->level - 1) * SPACE_BTW_MARTIANS_Y;
+  if (game->level_y_offset > 6 * SPACE_BTW_MARTIANS_Y)
+    game->level_y_offset = 6 * SPACE_BTW_MARTIANS_Y;
+
+  if (game_reset_enemies(game) == ERROR) {
+    return ERROR;
+  }
+
+  game->state = STATE_PLAYING;
+
+  return OK;
+}
+
+/**
+ * @brief Performs a complete game restart: resets score, level, ship,
+ * enemies, and bunkers.
+ *
+ * @param game Pointer to the GAME instance.
+ * @return OK if successful, ERROR on failure.
+ */
+static STATUS game_full_reset(GAME *game) {
+  if (!game) return ERROR;
+
+  if (game->ufo) {
+    al_stop_samples();
+    obj_destroy(game->ufo);
+    game->ufo = NULL;
+  }
+
+  game->total_score = 0;
+  game->level = 1;
+  game->level_y_offset = 0;
+  game->paused = false;
+
+  if (game_reset_ship(game) == ERROR) {
+    return ERROR;
+  }
+
+  if (game_reset_enemies(game) == ERROR) {
+    return ERROR;
+  }
+
+  if (game_reset_bunkers(game) == ERROR) {
+    return ERROR;
+  }
+
+  game->state = STATE_PLAYING;
+
+  return OK;
+}
+
+// =========================================================================
+// Functions: Game Initialization and Cleanup
+// =========================================================================
+
 /**
  * @brief Initializes the game with provided FPS and sets up the display,
  * bitmaps, fonts, and other resources.
@@ -401,66 +667,34 @@ STATUS game_init(GAME *game, float FPS) {
     return ERROR;
   }
 
-  game->ship = ship_create(game->ship_img, SHIP_WIDTH, SHIP_HEIGHT, SHIP_INIT_POS_X, 
+  game->ship = ship_create(game->ship_img, SHIP_WIDTH, SHIP_HEIGHT, SHIP_INIT_POS_X,
                            SHIP_INIT_POS_Y, NO_DIR, SHIP_LIFE); // Creacion de nave
   if (!game->ship) {
     return ERROR;
   }
 
-  for (int y = 0, i = 0; y < NUM_ENEMY_Y; y++) { // Creacion de enemigos
-    int source_y, score;
+  // Nuevos campos de estado
+  game->level = 1;
+  game->high_score = 0;
+  game->paused = false;
+  game->p_was_down = false;
 
-    if (i <= 10) {
-      source_y = 0;
-      score = POINTS_01;
-    } else if (i > 10 && i <= 31) {
-      source_y = 1;
-      score = POINTS_02;
-    } else {
-      source_y = 2;
-      score = POINTS_03;
-    }
-
-    for (int x = 0; x < NUM_ENEMY_X; x++) {
-      game->enemy[i] = mart_create(game->martian_img, MART_WIDTH, MART_HEIGHT,
-                                   MART_INIT_POS_X + x * SPACE_BTW_MARTIANS_X,
-                                   MART_INIT_POS_Y + y * SPACE_BTW_MARTIANS_Y,
-                                   &(game->enemies_dir), score);
-
-      if (!game->enemy[i]) {
-        return ERROR;
-      }
-
-      mart_set_source_y(game->enemy[i], source_y); // tipo de enemigo
-      i++;
-    }
-  }
-
-  game->num_enemies_alive = MAX_ENEMIES;
   game->ship_exploding = false;
   game->ship_explosion_timer = 0;
   game->state = STATE_PLAYING;
 
-  // Inicialización de escudos (BUNKER_PARTS partes: TL, BL, TR, BR, Center)
-  float bunker_spacing = (DISPLAY_WIDTH - 120) / NUM_BUNKERS;
-  for (int i = 0; i < NUM_BUNKERS; i++) {
-    float bx = 60 + i * bunker_spacing;
-    float by = BUNKER_INIT_POS_Y;
-
-    // Fila superior: TL (Row 0), Center (Row 4), TR (Row 2)
-    game->bunkers[i * BUNKER_PARTS + 0] =
-        bunker_create(game->bunker_img, 0, 0, BUNKER_PART_WIDTH, BUNKER_PART_HEIGHT, bx, by);
-    game->bunkers[i * BUNKER_PARTS + 1] =
-        bunker_create(game->bunker_img, 0, 4, BUNKER_PART_WIDTH, BUNKER_PART_HEIGHT, bx + BUNKER_PART_WIDTH, by);
-    game->bunkers[i * BUNKER_PARTS + 2] =
-        bunker_create(game->bunker_img, 0, 2, BUNKER_PART_WIDTH, BUNKER_PART_HEIGHT, bx + BUNKER_PART_WIDTH * 2, by);
-
-    // Fila inferior (patas): BL (Row 1), BR (Row 3)
-    game->bunkers[i * BUNKER_PARTS + 3] =
-        bunker_create(game->bunker_img, 0, 1, BUNKER_PART_WIDTH, BUNKER_PART_HEIGHT, bx, by + BUNKER_PART_HEIGHT);
-    game->bunkers[i * BUNKER_PARTS + 4] =
-        bunker_create(game->bunker_img, 0, 3, BUNKER_PART_WIDTH, BUNKER_PART_HEIGHT, bx + BUNKER_PART_WIDTH * 2, by + BUNKER_PART_HEIGHT);
+  // Creacion de enemigos
+  if (game_reset_enemies(game) == ERROR) {
+    return ERROR;
   }
+
+  // Inicialización de escudos
+  if (game_reset_bunkers(game) == ERROR) {
+    return ERROR;
+  }
+
+  // Cargar puntuacion maxima persistida
+  game_load_highscore(game);
 
   return OK;
 }
@@ -535,7 +769,9 @@ bool game_is_done(GAME *game) {
   return game->done;
 }
 
-// Martian Game Functions
+// =========================================================================
+// Functions: Enemy Management - Shooting, Movement, and Destruction
+// =========================================================================
 
 /**
  * @brief Sets a randomly chosen martian as the shooter.
@@ -596,8 +832,7 @@ STATUS game_move_martians(GAME *game, float speed) {
   }
 
   if (game->enemies_dir != NO_DIR) { // Se mueven todos los marcianos
-    for (int i = 0; i < game->num_enemies_alive && game->enemy[i] != NULL;
-         i++) {
+    for (int i = 0; i < game->num_enemies_alive && game->enemy[i] != NULL; i++) {
       martian = game->enemy[i];
       cx = mart_get_x(martian);
       cy = mart_get_y(martian);
@@ -616,7 +851,8 @@ STATUS game_move_martians(GAME *game, float speed) {
         i = game->num_enemies_alive;
 
       } else if (cy + MART_HEIGHT >= bottom_limit) {
-        game->enemies_dir = NO_DIR;
+        game_save_highscore(game);
+        game->state = STATE_GAME_OVER;
         i = game->num_enemies_alive;
       }
     }
@@ -668,7 +904,9 @@ STATUS game_destroy_martian(GAME *game, int i) { // Cambiar estructura y devolve
   return OK;
 }
 
-// ORPHAN BULLET GAMES FUNCTION
+// =========================================================================
+// Functions: Orphan Bullet Management - Adding, Moving, and Removing
+// =========================================================================
 
 /**
  * @brief Adds an orphan bullet to the game's orphan bullet list.
@@ -774,7 +1012,9 @@ STATUS game_move_orphan_bullets(GAME *game, float speed) {
   return OK;
 }
 
-// OBJECTS GAMES FUNCTION
+// =========================================================================
+// Functions: Object Management - Adding, Retrieving, and Removing Game Objects
+// =========================================================================
 
 /**
  * @brief Adds an object to the game's object list.
@@ -847,7 +1087,9 @@ OBJECT *game_get_object_at(GAME *game, int i) {
   return game->objects[i];
 }
 
-// SHIP MOVEMENT CALLBACKS
+// =========================================================================
+// Functions: Input Callbacks - Ship Movement and Shooting
+// =========================================================================
 
 /**
  * @brief Moves the player's ship to the left.
@@ -912,6 +1154,10 @@ STATUS callback_space(GAME *game) {
   return OK;
 }
 
+// =========================================================================
+// Functions: Game Update - Ship and Martian Actions, Collision Detection
+// =========================================================================
+
 // Para aumentar la dificultad, aumentar la cadencia y velocidad de los
 // marcianos, y reducir la de la nave
 /**
@@ -968,14 +1214,27 @@ STATUS game_martians_update(GAME *game, float speed) {
   }
 
   if (game->num_enemies_alive > 0) {
-    if (++game->enemy_shoot_timer >= MART_SHOOT_FREQ) {
+    // Frecuencia dinámica: aumenta con menos enemigos vivos y con el nivel
+    int dyn_freq = MART_SHOOT_FREQ
+        - (int)((MART_SHOOT_FREQ - MART_SHOOT_FREQ_MIN)
+                * (1.0f - (float)game->num_enemies_alive / MAX_ENEMIES))
+        - (game->level - 1) * 5;
+    if (dyn_freq < MART_SHOOT_FREQ_MIN) dyn_freq = MART_SHOOT_FREQ_MIN;
+
+    if (++game->enemy_shoot_timer >= dyn_freq) {
       if (game_martian_shoot(game, game->last_enemy_rand) == ERROR) {
         return ERROR;
       }
       game->enemy_shoot_timer = 0;
     }
 
-    if (++game->enemy_move_timer >= MART_MOVE_TIMER) {
+    // En el arcade original la velocidad escala reduciendo el intervalo entre pasos,
+    // no aumentando píxeles por paso: con 55 enemigos el timer es MART_MOVE_TIMER,
+    // con 1 enemigo cae a MART_MOVE_TIMER_MIN (casi un paso por frame).
+    int dyn_move_timer = (int)(MART_MOVE_TIMER * game->num_enemies_alive / MAX_ENEMIES);
+    if (dyn_move_timer < MART_MOVE_TIMER_MIN) dyn_move_timer = MART_MOVE_TIMER_MIN;
+
+    if (++game->enemy_move_timer >= dyn_move_timer) {
       game_move_martians(game, speed);
       game->enemy_move_timer = 0;
 
@@ -1240,6 +1499,25 @@ STATUS game_colisions(GAME *game) {
     }
   }
 
+  // 3. Marcianos destruyen bunkers al superponerse (cuando descienden)
+  for (int i = 0; i < game->num_enemies_alive && game->enemy[i] != NULL; i++) {
+    int mx = mart_get_x(game->enemy[i]);
+    int my = mart_get_y(game->enemy[i]);
+
+    for (int j = 0; j < NUM_BUNKERS * BUNKER_PARTS; j++) {
+      if (!game->bunkers[j]) continue;
+
+      float bx = bunker_get_x(game->bunkers[j]);
+      float by = bunker_get_y(game->bunkers[j]);
+
+      if (mx < bx + BUNKER_PART_WIDTH && mx + MART_WIDTH > bx &&
+          my < by + BUNKER_PART_HEIGHT && my + MART_HEIGHT > by) {
+        bunker_destroy(game->bunkers[j]);
+        game->bunkers[j] = NULL;
+      }
+    }
+  }
+
   return OK;
 }
 
@@ -1319,9 +1597,8 @@ STATUS game_update(GAME *game, ALLEGRO_KEYBOARD_STATE *key) {
     return ERROR;
   }
 
-  // Calcular velocidad progresiva: a menos enemigos, mas velocidad
-  current_mart_speed = MART_BASE_SPEED + (MART_MAX_SPEED - MART_BASE_SPEED) * 
-      (1.0f - ((float)game->num_enemies_alive / MAX_ENEMIES));
+  // Velocidad de paso constante: la "velocidad" percibida viene del timer dinámico en game_martians_update
+  current_mart_speed = MART_BASE_SPEED;
 
   switch (game->events.type) {
     case (ALLEGRO_EVENT_DISPLAY_CLOSE):
@@ -1330,11 +1607,36 @@ STATUS game_update(GAME *game, ALLEGRO_KEYBOARD_STATE *key) {
 
     case (ALLEGRO_EVENT_TIMER):
       if (game->state != STATE_PLAYING) {
-        if (al_key_down(key, ALLEGRO_KEY_ENTER) ||
-            al_key_down(key, ALLEGRO_KEY_ESCAPE)) {
+        if (al_key_down(key, ALLEGRO_KEY_ENTER)) {
+          if (game->state == STATE_WIN) {
+            game_next_level(game);   // Conserva puntuacion y vidas, nuevo nivel
+          } else {
+            game_full_reset(game);   // Reinicio completo tras game over
+          }
+        } else if (al_key_down(key, ALLEGRO_KEY_ESCAPE)) {
           game->done = true;
         }
         game->draw = true;
+        break;
+      }
+
+      // Pausa (P) con deteccion de flanco para toggle correcto
+      {
+        bool p_is_down = al_key_down(key, ALLEGRO_KEY_P);
+        if (p_is_down && !game->p_was_down) {
+          game->paused = !game->paused;
+        }
+        game->p_was_down = p_is_down;
+      }
+
+      if (game->paused) {
+        game->draw = true;
+        break;
+      }
+
+      // ESC durante el juego -> salir
+      if (al_key_down(key, ALLEGRO_KEY_ESCAPE)) {
+        game->done = true;
         break;
       }
 
@@ -1407,6 +1709,7 @@ STATUS game_update(GAME *game, ALLEGRO_KEYBOARD_STATE *key) {
       }
 
       if (game->num_enemies_alive <= 0) {
+        game_save_highscore(game);
         game->state = STATE_WIN;
       }
 
@@ -1435,6 +1738,10 @@ STATUS game_update(GAME *game, ALLEGRO_KEYBOARD_STATE *key) {
 
   return OK;
 }
+
+// =========================================================================
+// Functions: Rendering - Drawing Ships, Enemies, Bullets, and UI Elements
+// =========================================================================
 
 /**
  * @brief Renders the player's ship and its bullets.
@@ -1491,8 +1798,7 @@ STATUS game_print_orphan_bullets(GAME *game) {
   }
 
   for (int i = 0; i < game->num_orphan_bullets; i++) { // pintar balas huerfanas
-    BULLET *bullet = game_get_orphan_bullet_at(
-        game, i); // Se puede acceder sin una funcion extra
+    BULLET *bullet = game_get_orphan_bullet_at(game, i); // Se puede acceder sin una funcion extra
     bullet_print(bullet);
   }
 
@@ -1534,16 +1840,25 @@ STATUS game_print_other_elements(GAME *game) {
  * @return OK if rendering is successful, ERROR if game is NULL.
  */
 STATUS game_print_score(GAME *game) {
-  char score_text[10];
+  char buf[16];
 
   if (!game) {
     return ERROR;
   }
 
-  // pintar puntuacion
+  // SCORE (izquierda)
   al_draw_text(game->font, al_map_rgb(255, 255, 255), FRAME_WIDTH + 10, 120, 0, "SCORE");
-  sprintf(score_text, "%d", game->total_score);
-  al_draw_text(game->font, al_map_rgb(0, 255, 0), FRAME_WIDTH + 90, 120, 0, score_text);
+  sprintf(buf, "%d", game->total_score);
+  al_draw_text(game->font, al_map_rgb(0, 255, 0), FRAME_WIDTH + 90, 120, 0, buf);
+
+  // HI-SCORE y LEVEL (segunda linea)
+  al_draw_text(game->font, al_map_rgb(255, 255, 255), FRAME_WIDTH + 10, 140, 0, "HI-SCORE");
+  sprintf(buf, "%d", game->high_score);
+  al_draw_text(game->font, al_map_rgb(0, 255, 0), FRAME_WIDTH + 120, 140, 0, buf);
+
+  al_draw_text(game->font, al_map_rgb(255, 255, 255), CANVAS_WIDTH - 180, 140, 0, "LEVEL");
+  sprintf(buf, "%d", game->level);
+  al_draw_text(game->font, al_map_rgb(0, 255, 0), CANVAS_WIDTH - 110, 140, 0, buf);
 
   return OK;
 }
@@ -1652,19 +1967,35 @@ STATUS game_render(GAME *game) {
     // Pintar el marco encima de todo para recortar
     al_draw_bitmap(game->frame, 0, 0, 0);
 
-    // Pantallas de fin de juego
+    // Overlay de pausa
+    if (game->paused) {
+      al_draw_text(game->font, al_map_rgb(255, 255, 0),
+                   DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2,
+                   ALLEGRO_ALIGN_CENTER, "PAUSED");
+      al_draw_text(game->font, al_map_rgb(255, 255, 255),
+                   DISPLAY_WIDTH / 2, DISPLAY_HEIGHT / 2 + 30,
+                   ALLEGRO_ALIGN_CENTER, "PRESS P TO CONTINUE");
+    }
+
+    // Pantallas de fin de juego / nivel
     if (game->state == STATE_GAME_OVER) {
+      char score_end[32];
+      sprintf(score_end, "SCORE: %d", game->total_score);
       al_draw_text(game->font, al_map_rgb(255, 0, 0), DISPLAY_WIDTH / 2,
-                   DISPLAY_HEIGHT / 2, ALLEGRO_ALIGN_CENTER, "GAME OVER");
+                   DISPLAY_HEIGHT / 2 - 30, ALLEGRO_ALIGN_CENTER, "GAME OVER");
+      al_draw_text(game->font, al_map_rgb(255, 255, 255), DISPLAY_WIDTH / 2,
+                   DISPLAY_HEIGHT / 2, ALLEGRO_ALIGN_CENTER, score_end);
       al_draw_text(game->font, al_map_rgb(255, 255, 255), DISPLAY_WIDTH / 2,
                    DISPLAY_HEIGHT / 2 + 30, ALLEGRO_ALIGN_CENTER,
-                   "PRESS ENTER TO EXIT");
+                   "ENTER: PLAY AGAIN   ESC: EXIT");
     } else if (game->state == STATE_WIN) {
+      char level_end[32];
+      sprintf(level_end, "WAVE %d CLEARED!", game->level);
       al_draw_text(game->font, al_map_rgb(0, 255, 0), DISPLAY_WIDTH / 2,
-                   DISPLAY_HEIGHT / 2, ALLEGRO_ALIGN_CENTER, "YOU WIN!");
+                   DISPLAY_HEIGHT / 2 - 30, ALLEGRO_ALIGN_CENTER, level_end);
       al_draw_text(game->font, al_map_rgb(255, 255, 255), DISPLAY_WIDTH / 2,
-                   DISPLAY_HEIGHT / 2 + 30, ALLEGRO_ALIGN_CENTER,
-                   "PRESS ENTER TO EXIT");
+                   DISPLAY_HEIGHT / 2, ALLEGRO_ALIGN_CENTER,
+                   "ENTER: NEXT WAVE   ESC: EXIT");
     }
 
     al_flip_display();

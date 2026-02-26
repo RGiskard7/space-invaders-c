@@ -89,9 +89,14 @@
 
 #define MART_BULLET_SPEED 5 ///< Speed of the martian's bullets
 
-#define MART_MOVE_TIMER 20      ///< Timer interval for martian movement
-#define MART_SHOOT_FREQ 75      ///< Frequency at which martians can shoot
-#define MART_ANIMATION_SPEED 25 ///< Speed of the martian animation cycle
+#define MART_MOVE_TIMER 20           ///< Timer interval for martian movement
+#define MART_SHOOT_FREQ 75           ///< Frequency at which martians can shoot (frames)
+#define MART_SHOOT_FREQ_MIN 20       ///< Minimum shoot interval (hardest difficulty)
+#define MART_MOVE_TIMER_MIN 1        ///< Minimum move timer (1 frame = fastest possible)
+#define MART_ANIMATION_SPEED 25      ///< Speed of the martian animation cycle
+
+// PERSISTENCE
+#define HIGHSCORE_FILE "highscore.dat" ///< File used for high score persistence
 
 // BULLETS CONFIGURATION
 #define MAX_ORP_BULLETS                                                        \

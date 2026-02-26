@@ -134,3 +134,5 @@ install_manifest.txt
 # Logs
 *.log
 logs/
+
+highscore.dat
