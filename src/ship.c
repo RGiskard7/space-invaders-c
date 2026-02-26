@@ -518,8 +518,8 @@ BULLET *ship_get_bullet_at(SHIP *ship, int i) {
  * @return STATUS code.
  */
  // Pasar los limites por parametro
-STATUS ship_move_bullet(SHIP *ship, float speed) { 
-  int top_limit = 160; // Limite justo debajo de la UI
+STATUS ship_move_bullet(SHIP *ship, float speed) {
+  int top_limit = SHIP_BULLET_TOP_LIMIT;
 
   if (!ship) {
     return ERROR;

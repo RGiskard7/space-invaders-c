@@ -20,7 +20,6 @@ struct _bullet {
     ALLEGRO_BITMAP *bitmap;           ///< Bitmap representing the bullet image
     int source_x, source_y;           ///< Source coordinates in the bitmap
     int width, height;                ///< Dimensions of the bullet
-    int dx, dy;                       ///< Movement increments for speed adjustments
 };
 
 /**
@@ -58,9 +57,6 @@ BULLET *bullet_create(ALLEGRO_BITMAP *bitmap, int width, int height, float x, fl
 
     new_bullet->width = width;
     new_bullet->height = height;
-
-    new_bullet->dx = 0; //incremento de las coordenadas para la velocidad de la bullet
-    new_bullet->dy = 0;
 
     return new_bullet;
 }
@@ -265,68 +261,6 @@ int bullet_get_source_y(BULLET *bullet) {
     }
 
     return bullet->source_y;
-}
-
-/**
- * @brief Sets the x-coordinate increment (dx) for movement.
- * 
- * @param bullet Pointer to the bullet.
- * @param dx X increment.
- * @return STATUS code (OK on success, ERROR if bullet is NULL).
- */
-STATUS bullet_set_dx(BULLET *bullet, int dx) {
-    if (!bullet) {
-        return ERROR;
-    }
-
-    bullet->dx = dx;
-
-    return OK;
-}
-
-/**
- * @brief Retrieves the x-coordinate increment (dx) for movement.
- * 
- * @param bullet Pointer to the bullet.
- * @return dx value, or 0 if bullet is NULL.
- */
-int bullet_get_dx(BULLET *bullet) {
-    if (!bullet) {
-        return 0;
-    }
-
-    return bullet->dx;
-}
-
-/**
- * @brief Sets the y-coordinate increment (dy) for movement.
- * 
- * @param bullet Pointer to the bullet.
- * @param dy Y increment.
- * @return STATUS code (OK on success, ERROR if bullet is NULL).
- */
-STATUS bullet_set_dy(BULLET *bullet, int dy) {
-    if (!bullet) {
-        return ERROR;
-    }
-
-    bullet->dy = dy;
-
-    return OK;
-}
-
-/**
- * @brief Retrieves the y-coordinate increment (dy) for movement.
- * 
- * @param bullet Pointer to the bullet.
- * @return dy value, or 0 if bullet is NULL.
- */
-int bullet_get_dy(BULLET *bullet) {
-    if (!bullet) {
-        return 0;
-    }
-
-    return bullet->dy;
 }
 
 /**

@@ -16,6 +16,7 @@
 #include "martian.h"
 #include "bullet.h"
 #include "object.h"
+#include "bunker.h"
 
 typedef struct _game GAME;
 

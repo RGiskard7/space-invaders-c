@@ -46,7 +46,7 @@ struct _game {
   MARTIAN *enemy[MAX_ENEMIES];             ///< Array of enemy instances
   BULLET *orphan_bullets[MAX_ORP_BULLETS]; ///< Array of bullets without an owner
   OBJECT *objects[MAX_OBJECTS];            ///< Array of other objects in the game
-  OBJECT *bunkers[NUM_BUNKERS * 5];        ///< Array of bunker parts (5 pieces per bunker)
+  BUNKER *bunkers[NUM_BUNKERS * BUNKER_PARTS]; ///< Array of bunker parts (BUNKER_PARTS pieces per bunker)
 
   float FPS;                               ///< Frames per second for the game
   bool done, draw;                         ///< Flags to track game state
@@ -151,7 +151,7 @@ GAME *game_create() {
     new_game->objects[i] = NULL;
   }
 
-  for (int i = 0; i < NUM_BUNKERS; i++) {
+  for (int i = 0; i < NUM_BUNKERS * BUNKER_PARTS; i++) {
     new_game->bunkers[i] = NULL;
   }
 
@@ -211,9 +211,9 @@ STATUS game_destroy(GAME *game) {
     game->enemy[i] = NULL;
   }
 
-  for (int i = 0; i < NUM_BUNKERS * 5; i++) {
+  for (int i = 0; i < NUM_BUNKERS * BUNKER_PARTS; i++) {
     if (game->bunkers[i] != NULL) {
-      obj_destroy(game->bunkers[i]);
+      bunker_destroy(game->bunkers[i]);
       game->bunkers[i] = NULL;
     }
   }
@@ -375,6 +375,11 @@ STATUS game_init(GAME *game, float FPS) {
   }
   al_convert_mask_to_alpha(game->bunker_img, al_map_rgb(255, 0, 255));
 
+  game->ufo_img = al_load_bitmap(UFO_IMG_RSC);
+  if (!game->ufo_img) {
+    return ERROR;
+  }
+
   // Carga de sonidos
   game->samples[0] = al_load_sample(SND_SHOOT);
   game->samples[1] = al_load_sample(SND_INVADER_KILLED);
@@ -436,31 +441,25 @@ STATUS game_init(GAME *game, float FPS) {
   game->ship_explosion_timer = 0;
   game->state = STATE_PLAYING;
 
-  // Inicialización de escudos (5 partes: TL, BL, TR, BR, Center)
+  // Inicialización de escudos (BUNKER_PARTS partes: TL, BL, TR, BR, Center)
   float bunker_spacing = (DISPLAY_WIDTH - 120) / NUM_BUNKERS;
   for (int i = 0; i < NUM_BUNKERS; i++) {
     float bx = 60 + i * bunker_spacing;
     float by = BUNKER_INIT_POS_Y;
 
     // Fila superior: TL (Row 0), Center (Row 4), TR (Row 2)
-    game->bunkers[i * 5 + 0] =
-        obj_create(game->bunker_img, 0, 0, 20, 16, bx, by, true);
-    game->bunkers[i * 5 + 1] =
-        obj_create(game->bunker_img, 0, 4, 20, 16, bx + 20, by, true);
-    game->bunkers[i * 5 + 2] =
-        obj_create(game->bunker_img, 0, 2, 20, 16, bx + 40, by, true);
+    game->bunkers[i * BUNKER_PARTS + 0] =
+        bunker_create(game->bunker_img, 0, 0, BUNKER_PART_WIDTH, BUNKER_PART_HEIGHT, bx, by);
+    game->bunkers[i * BUNKER_PARTS + 1] =
+        bunker_create(game->bunker_img, 0, 4, BUNKER_PART_WIDTH, BUNKER_PART_HEIGHT, bx + BUNKER_PART_WIDTH, by);
+    game->bunkers[i * BUNKER_PARTS + 2] =
+        bunker_create(game->bunker_img, 0, 2, BUNKER_PART_WIDTH, BUNKER_PART_HEIGHT, bx + BUNKER_PART_WIDTH * 2, by);
 
     // Fila inferior (patas): BL (Row 1), BR (Row 3)
-    game->bunkers[i * 5 + 3] =
-        obj_create(game->bunker_img, 0, 1, 20, 16, bx, by + 16, true);
-    game->bunkers[i * 5 + 4] =
-        obj_create(game->bunker_img, 0, 3, 20, 16, bx + 40, by + 16, true);
-
-    for (int q = 0; q < 5; q++) {
-      if (game->bunkers[i * 5 + q]) {
-        obj_set_life(game->bunkers[i * 5 + q], BUNKER_LIFE);
-      }
-    }
+    game->bunkers[i * BUNKER_PARTS + 3] =
+        bunker_create(game->bunker_img, 0, 1, BUNKER_PART_WIDTH, BUNKER_PART_HEIGHT, bx, by + BUNKER_PART_HEIGHT);
+    game->bunkers[i * BUNKER_PARTS + 4] =
+        bunker_create(game->bunker_img, 0, 3, BUNKER_PART_WIDTH, BUNKER_PART_HEIGHT, bx + BUNKER_PART_WIDTH * 2, by + BUNKER_PART_HEIGHT);
   }
 
   return OK;
@@ -753,7 +752,7 @@ BULLET *game_get_orphan_bullet_at(GAME *game, int i) {
  * @return OK if successful, ERROR if game is NULL.
  */
 STATUS game_move_orphan_bullets(GAME *game, float speed) {
-  int bottom_limit = 530; // Limite inferior antes de chocar con el borde real
+  int bottom_limit = CANVAS_HEIGTH;
 
   if (!game) {
     return ERROR;
@@ -1130,22 +1129,22 @@ STATUS game_colisions(GAME *game) {
       continue;
     }
 
-    // Contra Bunkers (Cualquiera de las 20 partes)
-    for (int j = 0; j < NUM_BUNKERS * 5; j++) {
+    // Contra Bunkers (Cualquiera de las partes)
+    for (int j = 0; j < NUM_BUNKERS * BUNKER_PARTS; j++) {
       if (!game->bunkers[j])
         continue;
 
-      if (bullet_check_colision(sb, obj_get_x(game->bunkers[j]),
-                                obj_get_y(game->bunkers[j]), BUNKER_PART_WIDTH,
+      if (bullet_check_colision(sb, bunker_get_x(game->bunkers[j]),
+                                bunker_get_y(game->bunkers[j]), BUNKER_PART_WIDTH,
                                 BUNKER_PART_HEIGHT)) {
 
-        int life = obj_get_life(game->bunkers[j]) - 1;
-        obj_set_life(game->bunkers[j], life);
-        obj_set_source_x(game->bunkers[j], (BUNKER_LIFE - life)); // 1 state per hit
+        int life = bunker_get_life(game->bunkers[j]) - 1;
+        bunker_set_life(game->bunkers[j], life);
+        bunker_set_source_x(game->bunkers[j], (BUNKER_LIFE - life)); // 1 state per hit
         bullet_destroy(ship_extract_bullet_at(game->ship, i));
 
         if (life <= 0) {
-          obj_destroy(game->bunkers[j]);
+          bunker_destroy(game->bunkers[j]);
           game->bunkers[j] = NULL;
         }
 
@@ -1170,28 +1169,28 @@ STATUS game_colisions(GAME *game) {
         al_play_sample(game->samples[2], 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
         // Iniciar animacion de explosion de la propia nave (paralizando el juego)
         game->ship_exploding = true;
-        game->ship_explosion_timer = 60; // aprox 1 segundo
+        game->ship_explosion_timer = SHIP_EXPLOSION_FRAMES;
 
         bullet_destroy(mart_extract_bullet_at(m, k));
         ship_decrease_life(game->ship, 1);
         continue;
       }
 
-      for (int l = 0; l < NUM_BUNKERS * 5; l++) {
+      for (int l = 0; l < NUM_BUNKERS * BUNKER_PARTS; l++) {
         if (!game->bunkers[l])
           continue;
 
-        if (bullet_check_colision(mb, obj_get_x(game->bunkers[l]),
-                                  obj_get_y(game->bunkers[l]),
+        if (bullet_check_colision(mb, bunker_get_x(game->bunkers[l]),
+                                  bunker_get_y(game->bunkers[l]),
                                   BUNKER_PART_WIDTH, BUNKER_PART_HEIGHT)) {
 
-          int life = obj_get_life(game->bunkers[l]) - 1;
-          obj_set_life(game->bunkers[l], life);
-          obj_set_source_x(game->bunkers[l], (BUNKER_LIFE - life));
+          int life = bunker_get_life(game->bunkers[l]) - 1;
+          bunker_set_life(game->bunkers[l], life);
+          bunker_set_source_x(game->bunkers[l], (BUNKER_LIFE - life));
           bullet_destroy(mart_extract_bullet_at(m, k));
 
           if (life <= 0) {
-            obj_destroy(game->bunkers[l]);
+            bunker_destroy(game->bunkers[l]);
             game->bunkers[l] = NULL;
           }
           break;
@@ -1212,28 +1211,28 @@ STATUS game_colisions(GAME *game) {
       al_play_sample(game->samples[2], 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
 
       game->ship_exploding = true;
-      game->ship_explosion_timer = 60;
+      game->ship_explosion_timer = SHIP_EXPLOSION_FRAMES;
 
       bullet_destroy(game_extract_orphan_bullet_at(game, i));
       ship_decrease_life(game->ship, 1);
       continue;
     }
 
-    for (int l = 0; l < NUM_BUNKERS * 5; l++) {
+    for (int l = 0; l < NUM_BUNKERS * BUNKER_PARTS; l++) {
       if (!game->bunkers[l])
         continue;
-      
-        if (bullet_check_colision(ob, obj_get_x(game->bunkers[l]),
-                                  obj_get_y(game->bunkers[l]), BUNKER_PART_WIDTH,
-                                  BUNKER_PART_HEIGHT)) {
 
-        int life = obj_get_life(game->bunkers[l]) - 1;
-        obj_set_life(game->bunkers[l], life);
-        obj_set_source_x(game->bunkers[l], (BUNKER_LIFE - life));
+      if (bullet_check_colision(ob, bunker_get_x(game->bunkers[l]),
+                                bunker_get_y(game->bunkers[l]), BUNKER_PART_WIDTH,
+                                BUNKER_PART_HEIGHT)) {
+
+        int life = bunker_get_life(game->bunkers[l]) - 1;
+        bunker_set_life(game->bunkers[l], life);
+        bunker_set_source_x(game->bunkers[l], (BUNKER_LIFE - life));
         bullet_destroy(game_extract_orphan_bullet_at(game, i));
 
         if (life <= 0) {
-          obj_destroy(game->bunkers[l]);
+          bunker_destroy(game->bunkers[l]);
           game->bunkers[l] = NULL;
         }
         break;
@@ -1385,13 +1384,13 @@ STATUS game_update(GAME *game, ALLEGRO_KEYBOARD_STATE *key) {
         return ERROR;
       }
 
-      // Logica del OVNI (usando martian_img row 0 si ufo no tiene imagen propia)
+      // Logica del OVNI
       if (game->ufo == NULL) {
         if (rand() % UFO_SPAWN_CHANCE == 0) {
           int side = (rand() % 2 == 0 ? -1 : 1);
           game->ufo_dir = -side;
           float sx = (side == -1 ? (float)FRAME_WIDTH - UFO_WIDTH : (float)CANVAS_WIDTH);
-          game->ufo = obj_create(game->martian_img, 0, 0, UFO_WIDTH, UFO_HEIGHT, sx, 143, false);
+          game->ufo = obj_create(game->ufo_img, 0, 0, UFO_WIDTH, UFO_HEIGHT, sx, UFO_INIT_POS_Y, false);
           if (game->ufo) {
             al_play_sample(game->samples[3], 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_LOOP, NULL);
           }
@@ -1620,9 +1619,9 @@ STATUS game_render(GAME *game) {
       return ERROR;
     }
 
-    for (int i = 0; i < NUM_BUNKERS * 5; i++) {
+    for (int i = 0; i < NUM_BUNKERS * BUNKER_PARTS; i++) {
       if (game->bunkers[i] != NULL) {
-        obj_print(game->bunkers[i]);
+        bunker_print(game->bunkers[i]);
       }
     }
 

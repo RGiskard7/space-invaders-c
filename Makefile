@@ -16,8 +16,8 @@ LIB_ALLEGRO=\lib
 INCLUDE_ALLEGRO=\include
 
 # Archivos fuente y objetos
-SRCS=src/main.c src/game.c src/bullet.c src/ship.c src/martian.c src/object.c
-OBJS=main.o game.o bullet.o ship.o martian.o object.o
+SRCS=src/main.c src/game.c src/bullet.c src/ship.c src/martian.c src/object.c src/bunker.c
+OBJS=main.o game.o bullet.o ship.o martian.o object.o bunker.o
 
 # Regla por defecto
 all: $(EJECUTABLES)
@@ -53,6 +53,10 @@ martian.o: src/martian.c
 # Regla para compilar object.o
 object.o: src/object.c
 	$(CC) -I $(PATH_ALLEGRO)$(INCLUDE_ALLEGRO) -I include $(CFLAGS) -c src/object.c -o object.o
+
+# Regla para compilar bunker.o
+bunker.o: src/bunker.c
+	$(CC) -I $(PATH_ALLEGRO)$(INCLUDE_ALLEGRO) -I include $(CFLAGS) -c src/bunker.c -o bunker.o
 
 # Regla para limpiar los archivos generados
 clean:

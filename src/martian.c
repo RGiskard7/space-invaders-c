@@ -586,10 +586,6 @@ STATUS mart_shoot(MARTIAN *martian, ALLEGRO_BITMAP *bitmap) {
     return OK;
   }
 
-  if (martian->num_shots == MAX_MART_BULLETS) {
-    return OK;
-  }
-
   new_bullet = bullet_create(bitmap, 6, 12, martian->x + 12, martian->y, DOWN);
 
   if (!new_bullet) {

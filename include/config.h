@@ -21,7 +21,7 @@
 #define MART_BULLET_IMG_RSC "resources/images/martian_bullet.bmp"
 #define EXPLOSION_IMG_RSC "resources/images/martian_explosion.bmp"
 #define BUNKER_IMG_RSC "resources/images/escudos.bmp"
-#define UFO_IMG_RSC "resources/images/ufo.bmp"
+#define UFO_IMG_RSC "resources/images/ovni.png"
 #define FONT_RSC "resources/fonts/space_invaders.ttf"
 
 // Sound Resources
@@ -67,9 +67,9 @@
 #define SHIP_SPEED 6         ///< Ship movement speed
 #define SHIP_BULLET_SPEED 15 ///< Speed of the ship's bullets
 
-#define SHIP_TIMER 3 ///< Timer interval for ship's shooting cooldown
-
-#define SHIP_LIFE 3 ///< Initial lives for the ship
+#define SHIP_LIFE 3                ///< Initial lives for the ship
+#define SHIP_BULLET_TOP_LIMIT 160  ///< Y limit above which ship bullets are removed
+#define SHIP_EXPLOSION_FRAMES 60   ///< Duration of ship explosion animation in frames
 
 // MARTIANS CONFIGURATION
 #define MAX_ENEMIES 55 ///< Maximum number of enemies
@@ -109,15 +109,17 @@
 #define EXPLOSION_HEIGHT 34 ///< Height of the explosion sprite
 
 // UFO CONFIGURATION
-#define UFO_SPEED 4 ///< Speed of the UFO
+#define UFO_SPEED 4         ///< Speed of the UFO
 #define UFO_POINTS_MIN 50
 #define UFO_POINTS_MAX 300
 #define UFO_SPAWN_CHANCE 500 ///< 1 in 500 chance per frame to spawn UFO
 #define UFO_WIDTH 48
 #define UFO_HEIGHT 21
+#define UFO_INIT_POS_Y 143  ///< Y-coordinate where the UFO flies
 
 // BUNKERS CONFIGURATION
 #define NUM_BUNKERS 4
+#define BUNKER_PARTS 5       ///< Number of sprite parts per bunker
 #define BUNKER_PART_WIDTH 20
 #define BUNKER_PART_HEIGHT 16
 #define BUNKER_INIT_POS_Y DISPLAY_HEIGHT - 160

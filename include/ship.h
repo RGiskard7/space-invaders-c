@@ -129,16 +129,6 @@ int ship_get_width(SHIP *ship);
 int ship_get_height(SHIP *ship);
 
 /**
- * @brief Sets a timer for the ship's actions.
- */
-void ship_set_timer(SHIP *ship, int num);
-
-/**
- * @brief Gets the current timer value for the ship.
- */
-int ship_get_time(SHIP *max_time);
-
-/**
  * @brief Renders the ship on the display.
  */
 STATUS ship_print(SHIP *ship);
