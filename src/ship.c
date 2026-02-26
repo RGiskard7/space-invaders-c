@@ -28,10 +28,9 @@ struct _ship {
   BULLET *bullets[MAX_SHIP_BULLETS]; ///< Array holding ship's bullets
   long num_shots;                    ///< Number of bullets currently in use
   bool active;                       ///< Ship's active state
-  int source_x, source_y; ///< Source coordinates in bitmap for rendering
-  int width, height;      ///< Dimensions of the ship
-  int life;               ///< Remaining life of the ship
-  int timer;              ///< Timer for controlling shooting rate
+  int source_x, source_y;            ///< Source coordinates in bitmap for rendering
+  int width, height;                 ///< Dimensions of the ship
+  int life;                          ///< Remaining life of the ship
 };
 
 /**
@@ -77,12 +76,10 @@ SHIP *ship_create(ALLEGRO_BITMAP *bitmap, int width, int height, float x,
 
   new_ship->num_shots = 0;
 
-  new_ship->timer = 0;
-
   new_ship->active = false;
 
-  for (int i = 0; i < MAX_SHIP_BULLETS;
-       i++) { // Inicializacion de punteros a bullet
+  // Inicializacion de punteros a bullet
+  for (int i = 0; i < MAX_SHIP_BULLETS; i++) { 
     new_ship->bullets[i] = NULL;
   }
 
@@ -100,20 +97,16 @@ SHIP *ship_create(ALLEGRO_BITMAP *bitmap, int width, int height, float x,
 STATUS ship_destroy(SHIP *ship) { // Destruir ship
   STATUS result = OK;
 
-  if (!ship) {
-    return ERROR;
-  }
-
-  for (int i = 0; i < ship->num_shots && ship->bullets[i] != NULL;
-       i++) { // hacer el bucle con num_shots
-    if (bullet_destroy(ship->bullets[i]) == ERROR) {
-      result = ERROR;
+  if (ship != NULL) {
+    for (int i = 0; i < MAX_SHIP_BULLETS; i++) {
+      if (ship->bullets[i] != NULL) {
+        if (bullet_destroy(ship->bullets[i]) == ERROR) {
+          result = ERROR;
+        }
+      }
     }
-    ship->bullets[i] = NULL;
+    free(ship);
   }
-
-  free(ship);
-  ship = NULL;
 
   return result;
 }
@@ -122,124 +115,112 @@ STATUS ship_destroy(SHIP *ship) { // Destruir ship
  * @brief Sets the x-coordinate of the ship.
  *
  * @param ship Pointer to the ship.
- * @param cx New x-coordinate.
- * @return STATUS code.
+ * @param x New x-coordinate.
+ * @return STATUS code (OK on success, ERROR on failure).
  */
-STATUS ship_set_x(SHIP *ship, float cx) {
-  if (!ship) {
-    return ERROR;
+STATUS ship_set_x(SHIP *ship, float x) {
+  if (ship != NULL) {
+    ship->x = x;
+    return OK;
   }
-
-  ship->x = cx;
-
-  return OK;
+  return ERROR;
 }
 
 /**
- * @brief Retrieves the x-coordinate of the ship.
+ * @brief Gets the current x-coordinate of the ship.
  *
  * @param ship Pointer to the ship.
- * @return Ship's x-coordinate.
+ * @return The x-coordinate, or -1.0 if ship is NULL.
  */
 float ship_get_x(SHIP *ship) {
-  if (!ship) {
-    return ERROR;
+  if (ship != NULL) {
+    return ship->x;
   }
-
-  return ship->x;
+  return -1.0;
 }
 
 /**
  * @brief Sets the y-coordinate of the ship.
  *
  * @param ship Pointer to the ship.
- * @param cy New y-coordinate.
+ * @param y New y-coordinate.
  * @return STATUS code.
  */
-STATUS ship_set_y(SHIP *ship, float cy) {
-  if (!ship) {
-    return ERROR;
+STATUS ship_set_y(SHIP *ship, float y) {
+  if (ship != NULL) {
+    ship->y = y;
+    return OK;
   }
-
-  ship->y = cy;
-
-  return OK;
+  return ERROR;
 }
 
 /**
- * @brief Retrieves the y-coordinate of the ship.
+ * @brief Gets the current y-coordinate of the ship.
  *
  * @param ship Pointer to the ship.
- * @return Ship's y-coordinate.
+ * @return The y-coordinate, or -1.0 on failure.
  */
 float ship_get_y(SHIP *ship) {
-  if (!ship) {
-    return ERROR;
+  if (ship != NULL) {
+    return ship->y;
   }
-
-  return ship->y;
+  return -1.0;
 }
 
 /**
- * @brief Sets the ship's movement direction.
+ * @brief Sets the direction of the ship.
  *
  * @param ship Pointer to the ship.
  * @param dir New direction value.
  * @return STATUS code.
  */
 STATUS ship_set_dir(SHIP *ship, int dir) {
-  if (!ship || dir < 0) {
-    return ERROR;
+  if (ship != NULL) {
+    ship->dir = dir;
+    return OK;
   }
-
-  ship->dir = dir;
-
-  return OK;
+  return ERROR;
 }
 
 /**
- * @brief Retrieves the ship's movement direction.
+ * @brief Gets the current direction of the ship.
  *
  * @param ship Pointer to the ship.
- * @return Ship's direction.
+ * @return The direction value, or -1 on failure.
  */
 int ship_get_dir(SHIP *ship) {
-  if (!ship) {
-    return -1;
+  if (ship != NULL) {
+    return ship->dir;
   }
-
-  return ship->dir;
+  return -1;
 }
 
 /**
- * @brief Sets the ship's bitmap.
+ * @brief Sets the bitmap image of the ship.
  *
  * @param ship Pointer to the ship.
- * @param bitmap Bitmap to set for the ship.
+ * @param bitmap Pointer to the new bitmap.
  * @return STATUS code.
  */
 STATUS ship_set_bitmap(SHIP *ship, ALLEGRO_BITMAP *bitmap) {
-  if (!ship || !bitmap) {
-    return ERROR;
+  if (ship != NULL && bitmap != NULL) {
+    ship->bitmap = bitmap;
+    return OK;
   }
-
-  ship->bitmap = bitmap;
-
-  return OK;
+  return ERROR;
 }
 
 /**
- * @brief Retrieves the ship's bitmap.
+ * @brief Gets the bitmap image of the ship.
  *
  * @param ship Pointer to the ship.
- * @return Pointer to the bitmap.
+ * @return Pointer to the ship's bitmap, or NULL if ship is NULL.
  */
 ALLEGRO_BITMAP *ship_get_bitmap(SHIP *ship) {
-  if (!ship) {
-    return NULL;
+  if (ship != NULL) {
+    return ship->bitmap;
   }
-
-  return ship->bitmap;
+  return NULL;
 }
 
 /**
@@ -250,202 +231,194 @@ ALLEGRO_BITMAP *ship_get_bitmap(SHIP *ship) {
  * @return STATUS code.
  */
 STATUS ship_set_active(SHIP *ship, bool active) {
-  if (!ship) {
-    return ERROR;
+  if (ship != NULL) {
+    ship->active = active;
+    return OK;
   }
-
-  ship->active = active;
-
-  return OK;
+  return ERROR;
 }
 
 /**
- * @brief Retrieves the active state of the ship.
+ * @brief Gets the current active state of the ship.
  *
  * @param ship Pointer to the ship.
- * @return true if active, false otherwise.
+ * @return The active state (true/false).
  */
 bool ship_get_active(SHIP *ship) {
-  if (!ship) {
-    return ERROR;
+  if (ship != NULL) {
+    return ship->active;
   }
-
-  return ship->active;
+  return false;
 }
 
 /**
- * @brief Sets the source x-coordinate in the bitmap for rendering.
+ * @brief Sets the source x offset for the ship's bitmap rendering.
  *
  * @param ship Pointer to the ship.
- * @param source_x New source x-coordinate.
+ * @param source_x New source x value.
  * @return STATUS code.
  */
 STATUS ship_set_source_x(SHIP *ship, int source_x) {
-  if (!ship) {
-    return ERROR;
+  if (ship != NULL) {
+    ship->source_x = source_x;
+    return OK;
   }
-
-  ship->source_x = source_x;
-
-  return OK;
+  return ERROR;
 }
 
 /**
- * @brief Gets the source x-coordinate for rendering the ship.
+ * @brief Gets the current source x offset of the ship's bitmap.
  *
  * @param ship Pointer to the ship.
- * @return The x-coordinate of the ship's source region, or ERROR if ship is
- * NULL.
+ * @return The source x value, or -1 on failure.
  */
 int ship_get_source_x(SHIP *ship) {
-  if (!ship) {
-    return ERROR;
+  if (ship != NULL) {
+    return ship->source_x;
   }
-
-  return ship->source_x;
+  return -1;
 }
 
 /**
- * @brief Sets the source y-coordinate for rendering the ship.
+ * @brief Sets the source y offset for the ship's bitmap rendering.
  *
  * @param ship Pointer to the ship.
- * @param source_y New source y-coordinate.
+ * @param source_y New source y value.
  * @return STATUS code.
  */
 STATUS ship_set_source_y(SHIP *ship, int source_y) {
-  if (!ship) {
-    return ERROR;
+  if (ship != NULL) {
+    ship->source_y = source_y;
+    return OK;
   }
-
-  ship->source_y = source_y;
-
-  return OK;
+  return ERROR;
 }
 
 /**
- * @brief Gets the source y-coordinate for rendering the ship.
+ * @brief Gets the current source y offset of the ship's bitmap.
  *
  * @param ship Pointer to the ship.
- * @return The y-coordinate of the ship's source region, or ERROR if ship is
- * NULL.
+ * @return The source y value, or -1 on failure.
  */
 int ship_get_source_y(SHIP *ship) {
-  if (!ship) {
-    return ERROR;
+  if (ship != NULL) {
+    return ship->source_y;
   }
-
-  return ship->source_y;
+  return -1;
 }
 
 /**
- * @brief Sets the number of shots fired by the ship.
+ * @brief Sets the current number of shots (bullets) the ship has fired.
  *
  * @param ship Pointer to the ship.
- * @param num_shots Number of shots.
+ * @param num_shots New number of shots.
  * @return STATUS code.
  */
 STATUS ship_set_num_shots(SHIP *ship, long num_shots) {
-  if (!ship || num_shots < 0) {
-    return ERROR;
+  if (ship != NULL) {
+    ship->num_shots = num_shots;
+    return OK;
   }
-
-  ship->num_shots = num_shots;
-
-  return OK;
+  return ERROR;
 }
 
 /**
- * @brief Gets the number of shots fired by the ship.
+ * @brief Gets the current number of bullets the ship has fired.
  *
  * @param ship Pointer to the ship.
- * @return The number of shots or ERROR if ship is NULL.
+ * @return The number of shots, or -1 on failure.
  */
 long ship_get_num_shots(SHIP *ship) {
-  if (!ship) {
-    return ERROR;
+  if (ship != NULL) {
+    return ship->num_shots;
   }
-
-  return ship->num_shots;
+  return -1;
 }
 
 /**
- * @brief Sets the ship's life.
+ * @brief Sets the life points for the ship.
  *
  * @param ship Pointer to the ship.
  * @param life New life value.
  * @return STATUS code.
  */
 STATUS ship_set_life(SHIP *ship, int life) {
-  if (!ship) {
-    return ERROR;
+  if (ship != NULL) {
+    ship->life = life;
+    return OK;
   }
-
-  ship->life = life;
-
-  return OK;
+  return ERROR;
 }
 
 /**
- * @brief Gets the current life of the ship.
+ * @brief Gets the remaining life points of the ship.
  *
  * @param ship Pointer to the ship.
- * @return Ship's life or 0 if ship is NULL.
+ * @return The life points, or -1 on failure.
  */
 int ship_get_life(SHIP *ship) {
-  if (!ship) {
-    return 0;
+  if (ship != NULL) {
+    return ship->life;
   }
-
-  return ship->life;
+  return -1;
 }
 
 /**
  * @brief Gets the width of the ship.
  *
  * @param ship Pointer to the ship.
- * @return Ship's width or 0 if ship is NULL.
+ * @return The width, or -1 on failure.
  */
 int ship_get_width(SHIP *ship) {
-  if (!ship) {
-    return 0;
+  if (ship != NULL) {
+    return ship->width;
   }
-
-  return ship->width;
+  return -1;
 }
 
 /**
  * @brief Gets the height of the ship.
  *
  * @param ship Pointer to the ship.
- * @return Ship's height or 0 if ship is NULL.
+ * @return The height, or -1 on failure.
  */
 int ship_get_height(SHIP *ship) {
-  if (!ship) {
-    return 0;
+  if (ship != NULL) {
+    return ship->height;
   }
-
-  return ship->height;
+  return -1;
 }
 
 /**
- * @brief Decreases the life of the ship by a specified amount.
+ * @brief Renders the ship on the screen.
  *
- * @param ship Pointer to the ship.
- * @param amount Amount to decrease.
+ * @param ship Pointer to the ship to print.
  * @return STATUS code.
  */
-STATUS ship_decrease_life(SHIP *ship, int amount) {
-  if (!ship) {
-    return ERROR;
-  }
+STATUS ship_print(SHIP *ship) {
+  if (ship != NULL && ship->bitmap != NULL) {
+    al_draw_bitmap_region(ship->bitmap, (ship->source_x * ship->width),
+                          (ship->source_y * ship->height), ship->width,
+                          ship->height, ship->x, ship->y, 0);
 
-  if (ship->life - amount <= 0) {
-    ship->life = 0;
-  } else {
-    ship->life -= amount;
+    return OK;
   }
+  return ERROR;
+}
 
-  return OK;
+/**
+ * @brief Decreases the life points of the ship.
+ *
+ * @param ship Pointer to the ship.
+ * @param value Amount to decrease.
+ * @return STATUS code.
+ */
+STATUS ship_decrease_life(SHIP *ship, int value) {
+  if (ship != NULL) {
+    ship->life -= value;
+    return OK;
+  }
+  return ERROR;
 }
 
 /**
@@ -467,19 +440,16 @@ STATUS ship_add_bullet(SHIP *ship, BULLET *bullet) {
 }
 
 /**
- * @brief Removes and returns the oldest bullet from the ship's bullet array
- * (FIFO).
+ * @brief Removes and returns the oldest bullet in the ship's queue.
  *
  * @param ship Pointer to the ship.
- * @return Pointer to the removed bullet or NULL if no bullets are present.
+ * @return The oldest bullet, or NULL if no bullets are found.
  */
-BULLET *
-ship_dequeue_bullet(SHIP *ship) { // Las balas se comportan como una cola
+BULLET *ship_dequeue_bullet(SHIP *ship) {
   BULLET *bullet = NULL;
 
   if (ship != NULL && ship->num_shots > 0) {
     bullet = ship->bullets[0];
-    ship->bullets[0] = NULL;
 
     for (int i = 0; i < ship->num_shots - 1; i++) {
       ship->bullets[i] = ship->bullets[i + 1];
@@ -493,15 +463,16 @@ ship_dequeue_bullet(SHIP *ship) { // Las balas se comportan como una cola
 }
 
 /**
- * @brief Removes and returns a specific bullet at index i from the ship's
- * bullet array.
+ * @brief Removes and returns the bullet at a specified index.
  *
  * @param ship Pointer to the ship.
  * @param i Index of bullet to remove.
  * @return Pointer to the removed bullet or NULL if index is invalid.
  */
-BULLET *ship_extract_bullet_at(
-    SHIP *ship, int i) { // Las balas se comportan como una lista dinamica
+ // Las balas se comportan como una lista dinamica, se pueden eliminar 
+ // en cualquier orden, pero se deben desplazar las balas restantes 
+ // para mantener la continuidad de la lista
+BULLET *ship_extract_bullet_at(SHIP *ship, int i) {
   BULLET *bullet = NULL;
 
   if (ship != NULL && ship->num_shots > 0) {
@@ -514,8 +485,7 @@ BULLET *ship_extract_bullet_at(
           ship->bullets[j] = ship->bullets[j + 1];
         }
 
-        // Reducimos el contador de balas y aseguramos que el último espacio sea
-        // NULL
+        // Reducimos el contador de balas y aseguramos que el último espacio sea NULL
         ship->num_shots--;
         ship->bullets[ship->num_shots] = NULL;
       }
@@ -547,17 +517,17 @@ BULLET *ship_get_bullet_at(SHIP *ship, int i) {
  * @param speed Speed of bullet movement.
  * @return STATUS code.
  */
-STATUS ship_move_bullet(SHIP *ship,
-                        float speed) { // Pasar los limites por parametro
-  int top_limit = 160;                 // Limite justo debajo de la UI
+ // Pasar los limites por parametro
+STATUS ship_move_bullet(SHIP *ship, float speed) { 
+  int top_limit = 160; // Limite justo debajo de la UI
 
   if (!ship) {
     return ERROR;
   }
 
   for (int i = ship->num_shots - 1; i >= 0; i--) {
-    if (bullet_get_y(ship->bullets[i]) - speed >
-        top_limit) { // Comprobar si ha llegado a arriba (0)
+    // Comprobar si ha llegado a arriba (0)
+    if (bullet_get_y(ship->bullets[i]) - speed > top_limit) {
       if (bullet_move(ship->bullets[i], speed) == ERROR) {
         return ERROR;
       }
@@ -585,16 +555,12 @@ STATUS ship_shoot(SHIP *ship, ALLEGRO_BITMAP *bitmap) {
     return ERROR;
   }
 
-  if (ship->num_shots > MAX_SHIP_BULLETS) {
+  if (ship->num_shots >= MAX_SHIP_BULLETS) {
     return ERROR;
   }
 
-  if (ship->num_shots == MAX_SHIP_BULLETS) {
-    return OK;
-  }
-
-  new_bullet = bullet_create(bitmap, 6, 12, ship->x + 12, ship->y,
-                             UP); // La bullet se situa a 12 por encima
+  // La bullet se situa a 12 por encima
+  new_bullet = bullet_create(bitmap, 6, 12, ship->x + 12, ship->y, UP);
   if (new_bullet == NULL) {
     return ERROR;
   }
@@ -618,89 +584,26 @@ STATUS ship_move(SHIP *ship, float speed) { // Pedir los limites por parametro
   if (!ship) {
     return ERROR;
   }
-
-  if (ship->dir == RIGHT) {
-    ship->x += speed;
-  } else if (ship->dir == LEFT) {
-    ship->x -= speed;
-  } else {
-    ship->dir = NO_DIR;
-  }
-
+  ship->x += speed;
   return OK;
 }
 
 /**
- * @brief Renders the ship at its current position.
+ * @brief Check if the ship is in the position (x, y)
  *
  * @param ship Pointer to the ship.
- * @return STATUS code.
- */
-STATUS ship_print(SHIP *ship) {
-  if (!ship) {
-    return ERROR;
-  }
-
-  al_draw_bitmap_region(ship->bitmap, (ship->source_x * ship->width),
-                        (ship->source_y * ship->height), ship->width,
-                        ship->height, ship->x, ship->y, 0);
-
-  return OK;
-}
-
-/**
- * @brief Updates the ship's internal timer for controlling firing rate.
- *
- * @param ship Pointer to the ship.
- * @param max_time Maximum timer threshold for firing.
- */
-void ship_set_timer(
-    SHIP *ship,
-    int max_time) { // Para controlar la cadencia de disparo (la frecuencia)
-  if (!ship) {
-    return;
-  }
-
-  ship->timer++;
-  if (ship->timer >=
-      max_time) { // (ship->timer++ >= num) temporizador para las balas
-    ship->timer = 0;
-  }
-
-  return;
-}
-
-/**
- * @brief Retrieves the current timer value for the ship.
- *
- * @param ship Pointer to the ship.
- * @return Timer value or -1 if ship is NULL.
- */
-int ship_get_time(SHIP *ship) {
-  if (!ship) {
-    return -1;
-  }
-
-  return ship->timer;
-}
-
-/**
- * @brief Checks if the ship occupies a specific location.
- *
- * @param ship Pointer to the ship.
- * @param x X-coordinate to check.
- * @param y Y-coordinate to check.
- * @return true if the ship is at (x, y), false otherwise.
+ * @param x x position.
+ * @param y y position.
+ * @return bool.
  */
 bool ship_some_loc(SHIP *ship, int x, int y) {
   if (!ship) {
     return false;
   }
 
-  if (ship->x == x) {
-    if (ship->y == y) {
-      return true;
-    }
+  if (x >= ship->x && x <= ship->x + ship->width && y >= ship->y &&
+      y <= ship->y + ship->height) {
+    return true;
   }
 
   return false;

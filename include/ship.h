@@ -7,11 +7,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 #include "bullet.h"
 #include "config.h"
 #include "types.h"
-
 
 #define MAX_SHIP_BULLETS 1
 #define SHIP_WIDTH 30

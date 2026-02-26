@@ -137,8 +137,7 @@ int main() {
   fprintf(stdout, "Starting main game loop.\n");
 
   while (game_is_done(game) != true) {
-    al_wait_for_event(game_get_ev_queue(game),
-                      game_get_event(game)); // Wait for events
+    al_wait_for_event(game_get_ev_queue(game), game_get_event(game)); // Wait for events
     al_get_keyboard_state(&key);
 
     if (game_update(game, &key) == ERROR) {
@@ -230,18 +229,15 @@ bool init_allegro(Flags *flags) {
  * @param game Pointer to the GAME instance.
  */
 void register_event_sources(GAME *game) {
-  al_register_event_source(
-      game_get_ev_queue(game),
-      al_get_timer_event_source(game_get_timer(
-          game))); // Registrar en la pila todos los eventos de tiempo
-  al_register_event_source(
-      game_get_ev_queue(game),
-      al_get_display_event_source(game_get_screen(
-          game))); // Registrar en la pila todos los eventos de pantalla
-  al_register_event_source(
-      game_get_ev_queue(game),
-      al_get_keyboard_event_source()); // Registrar en la pila todos los eventos
-                                       // del teclado
+  // Registrar en la pila todos los eventos de tiempo
+  al_register_event_source(game_get_ev_queue(game),
+      al_get_timer_event_source(game_get_timer(game))); 
+  // Registrar en la pila todos los eventos de pantalla
+  al_register_event_source(game_get_ev_queue(game),
+      al_get_display_event_source(game_get_screen(game))); 
+  // Registrar en la pila todos los eventos del teclado
+  al_register_event_source(game_get_ev_queue(game),
+      al_get_keyboard_event_source()); 
 
   return;
 }
@@ -259,8 +255,8 @@ void windows_configuration(GAME *game) {
   int monitor_width, monitor_height;
   int window_pos_x, window_pos_y;
 
-  al_get_monitor_info(
-      0, &monitor_info); // Obtener las dimensiones del monitor principal
+  // Obtener las dimensiones del monitor principal
+  al_get_monitor_info(0, &monitor_info); 
 
   monitor_width = monitor_info.x2 - monitor_info.x1;
   monitor_height = monitor_info.y2 - monitor_info.y1;
@@ -268,8 +264,8 @@ void windows_configuration(GAME *game) {
   window_pos_x = (monitor_width - DISPLAY_WIDTH) / 2;
   window_pos_y = (monitor_height - DISPLAY_HEIGHT) / 2;
 
-  al_set_window_position(game_get_screen(game), window_pos_x,
-                         window_pos_y); // Posicionar la pantalla creada
+  // Posicionar la pantalla creada en el centro del monitor
+  al_set_window_position(game_get_screen(game), window_pos_x, window_pos_y); 
   al_set_window_title(game_get_screen(game), "Space Invaders");
 
   return;

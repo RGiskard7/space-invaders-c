@@ -20,6 +20,8 @@
 #define SHIP_BULLET_IMG_RSC "resources/images/ship_bullet.bmp"
 #define MART_BULLET_IMG_RSC "resources/images/martian_bullet.bmp"
 #define EXPLOSION_IMG_RSC "resources/images/martian_explosion.bmp"
+#define BUNKER_IMG_RSC "resources/images/escudos.bmp"
+#define UFO_IMG_RSC "resources/images/ufo.bmp"
 #define FONT_RSC "resources/fonts/space_invaders.ttf"
 
 // Sound Resources
@@ -116,9 +118,9 @@
 
 // BUNKERS CONFIGURATION
 #define NUM_BUNKERS 4
-#define BUNKER_WIDTH 60
-#define BUNKER_HEIGHT 16
+#define BUNKER_PART_WIDTH 20
+#define BUNKER_PART_HEIGHT 16
 #define BUNKER_INIT_POS_Y DISPLAY_HEIGHT - 160
-#define BUNKER_LIFE 10 ///< Hits each bunker can take
+#define BUNKER_LIFE 3 ///< 3 states (frames), 1 hit per state
 
 #endif /* CONFIG_H */

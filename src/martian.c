@@ -27,11 +27,11 @@ struct _martian {
   BULLET *bullets[MAX_MART_BULLETS]; ///< Array of bullets fired by the Martian
   long num_shots;                    ///< Number of bullets currently in use
   bool active;                       ///< Active state of the Martian
-  int source_x, source_y; ///< Source coordinates in bitmap for rendering
-  int width, height;      ///< Dimensions of the Martian sprite
+  int source_x, source_y;            ///< Source coordinates in bitmap for rendering
+  int width, height;                 ///< Dimensions of the Martian sprite
   // int life;
-  int timer; ///< Timer for controlling actions
-  int score; ///< Score value awarded when destroyed
+  int timer;                         ///< Timer for controlling actions
+  int score;                         ///< Score value awarded when destroyed
 };
 
 /**
@@ -48,7 +48,7 @@ struct _martian {
  * @return A pointer to the created MARTIAN structure, or NULL on failure.
  */
 MARTIAN *mart_create(ALLEGRO_BITMAP *bitmap, int width, int height, float x,
-                     float y, float *dir, int score) { // Crear martian
+                     float y, float *dir, int score) {
   MARTIAN *new_martian = NULL;
 
   if (!bitmap) {
@@ -83,8 +83,8 @@ MARTIAN *mart_create(ALLEGRO_BITMAP *bitmap, int width, int height, float x,
 
   new_martian->active = false;
 
-  for (int i = 0; i < MAX_MART_BULLETS;
-       i++) { // Inicializacion de punteros a bala
+  // Inicializacion de punteros a balas a NULL
+  for (int i = 0; i < MAX_MART_BULLETS; i++) {
     new_martian->bullets[i] = NULL;
   }
 
@@ -99,15 +99,15 @@ MARTIAN *mart_create(ALLEGRO_BITMAP *bitmap, int width, int height, float x,
  * @param martian Pointer to the Martian to destroy.
  * @return STATUS code (OK on success, ERROR on failure).
  */
-STATUS mart_destroy(MARTIAN *martian) { // Destruir martian
+STATUS mart_destroy(MARTIAN *martian) {
   STATUS result = OK;
 
   if (!martian) {
     return ERROR;
   }
 
-  for (int i = 0; i < martian->num_shots && martian->bullets[i] != NULL;
-       i++) { // Recorrer hasta el maximo de balas disparadas
+  // Recorrer hasta el maximo de balas disparadas por el marciano y destruir cada una
+  for (int i = 0; i < martian->num_shots && martian->bullets[i] != NULL; i++) { 
     if (bullet_destroy(martian->bullets[i]) == ERROR) {
       result = ERROR;
     }
@@ -471,8 +471,8 @@ STATUS mart_add_bullet(MARTIAN *martian, BULLET *bullet) {
  * @param martian Pointer to the Martian.
  * @return Pointer to the dequeued bullet, or NULL if none available.
  */
-BULLET *
-mart_dequeue_bullet(MARTIAN *martian) { // Las balas se comportan como una cola
+ // Las balas se comportan como una cola, se eliminan en el orden en que fueron disparadas
+BULLET *mart_dequeue_bullet(MARTIAN *martian) {
   BULLET *bullet = NULL;
 
   if (martian != NULL && martian->num_shots > 0) {
@@ -497,8 +497,10 @@ mart_dequeue_bullet(MARTIAN *martian) { // Las balas se comportan como una cola
  * @param i Index of the bullet to extract.
  * @return Pointer to the extracted bullet, or NULL if not found.
  */
-BULLET *mart_extract_bullet_at(
-    MARTIAN *martian, int i) { // Las balas se comportan como una lista dinamica
+ // Las balas se comportan como una lista dinamica, se pueden eliminar 
+ // en cualquier orden, pero se deben desplazar las balas restantes 
+ // para mantener la continuidad de la lista
+BULLET *mart_extract_bullet_at(MARTIAN *martian, int i) { 
   BULLET *bullet = NULL;
 
   if (martian != NULL && martian->num_shots > 0) {
@@ -544,8 +546,7 @@ BULLET *mart_get_bullet_at(MARTIAN *martian, int i) {
  * @param speed Movement speed.
  * @return STATUS code (OK on success, ERROR on failure).
  */
-STATUS mart_move_bullet(MARTIAN *martian,
-                        float speed) { // Pasar los limites por parametro
+STATUS mart_move_bullet(MARTIAN *martian, float speed) { // Pasar los limites por parametro para que la funcion sea mas reutilizable
   float bottom_limit = CANVAS_HEIGTH;
 
   if (!martian) {
@@ -610,8 +611,7 @@ STATUS mart_shoot(MARTIAN *martian, ALLEGRO_BITMAP *bitmap) {
  * @param speed Movement speed.
  * @return STATUS code (OK on success, ERROR on failure).
  */
-STATUS mart_move(MARTIAN *martian,
-                 float speed) { // Pedir los limites por parametro
+STATUS mart_move(MARTIAN *martian, float speed) { // Pedir los limites por parametro
   if (!martian) {
     return ERROR;
   }
@@ -657,8 +657,9 @@ void mart_set_timer(MARTIAN *martian, int max_time) {
     return;
   }
 
+  // temporizador para las balas
   martian->timer++;
-  if (martian->timer >= max_time) { // temporizador para las balas
+  if (martian->timer >= max_time) {
     martian->timer = 0;
   }
 
