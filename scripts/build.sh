@@ -94,10 +94,11 @@ else
     gcc -c src/ship.c -I include $(pkg-config --cflags allegro-5) -Wall -g -o ship.o
     gcc -c src/martian.c -I include $(pkg-config --cflags allegro-5) -Wall -g -o martian.o
     gcc -c src/object.c -I include $(pkg-config --cflags allegro-5) -Wall -g -o object.o
+    gcc -c src/bunker.c -I include $(pkg-config --cflags allegro-5) -Wall -g -o bunker.o
 
     # Enlazar
-    gcc -o SpaceInvaders main.o game.o bullet.o ship.o martian.o object.o \
-        $(pkg-config --libs allegro-5 allegro_main-5 allegro_image-5 allegro_font-5 allegro_ttf-5 allegro_primitives-5)
+    gcc -o SpaceInvaders main.o game.o bullet.o ship.o martian.o object.o bunker.o \
+        $(pkg-config --libs allegro-5 allegro_main-5 allegro_image-5 allegro_font-5 allegro_ttf-5 allegro_primitives-5 allegro_audio-5 allegro_acodec-5)
 
     print_success "Compilación completada"
 fi

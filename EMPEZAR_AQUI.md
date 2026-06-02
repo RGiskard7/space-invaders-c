@@ -1,74 +1,79 @@
-# 🚀 CÓMO EMPEZAR - Space Invaders
+# 🚀 EMPEZAR AQUI - Space Invaders
 
-**Elige tu sistema operativo y sigue SOLO esas instrucciones:**
+Elige tu sistema operativo y sigue SOLO esas instrucciones:
 
 ---
 
 ## 🍎 macOS (Apple)
 
-### ✅ OPCIÓN 1: Super Rápida (1 comando)
+### ✅ OPCION 1: Super Rapida (2 comandos)
 
 ```bash
-scripts/install-deps.sh && scripts/build.sh run
+./scripts/install-deps.sh
+./scripts/build.sh run
 ```
 
-**Eso es todo.** Si funciona, ¡a jugar!
+**Eso es todo.** Si funciona, i jugar!
 
-### ⚠️ Si da error, OPCIÓN 2:
+### ⚠️ Si da error, OPCION 2:
 
 ```bash
 # 1. Instalar dependencias
-scripts/install-deps.sh
+brew install allegro gcc pkg-config
 
-# 2. Si falla, instalar manualmente:
-brew install allegro
-brew install gcc
+# 2. Si no te funciona el install-deps.sh, hazlo manual:
+./scripts/build.sh run
+```
 
-# 3. Compilar y ejecutar
-scripts/build.sh run
+---
+
+## 🐧 Linux
+
+### Ubuntu/Debian
+```bash
+sudo apt install build-essential gcc liballegro5-dev liballegro-image-5.0-dev liballegro-audio-5.0-dev liballegro-acodec-5.0-dev pkg-config
+make -f Makefile.unix && ./SpaceInvaders
+```
+
+### Fedora
+```bash
+sudo dnf install gcc make allegro5-devel pkg-config
+make -f Makefile.unix && ./SpaceInvaders
+```
+
+### Arch
+```bash
+sudo pacman -S base-devel allegro pkg-config
+make -f Makefile.unix && ./SpaceInvaders
 ```
 
 ---
 
 ## 🪟 Windows
 
-### ✅ MÉTODO RECOMENDADO: Script Automático
+### ✅ METODO: MSYS2/MinGW (Recomendado)
 
 **Pasos:**
 
-1. **Ejecuta el instalador** (como Administrador):
+1. **Instala dependencias (desde MSYS2 MinGW-w64):**
    ```cmd
-   scripts\install-deps.bat
-   ```
-   Esto instalará MinGW y Allegro en `C:\mingw64` y `C:\allegro-5.2.9.1-mingw-14.1.0`.
-
-2. **Compila y ejecuta**:
-   ```cmd
-   scripts\build.bat run
+   pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-allegro mingw-w64-x86_64-pkg-config
    ```
 
-### ⚠️ Instalación Manual:
+2. **Compila y ejecuta:**
+   ```cmd
+   mingw32-make -f Makefile.unix
+   SpaceInvaders.exe
+   ```
 
-1. Descarga **MinGW 14.1.0** (WinLibs) y extráelo en `C:\mingw64`.
-2. Descarga **Allegro 5.2.9** y extráelo en `C:\allegro-5.2.9.1-mingw-14.1.0`.
+### ⚠️ Si usas MinGW manual:
+
+1. Descarga **MinGW 14.1.0** y extralo en `C:\mingw64`
+2. Asegurate que `C:\mingw64\bin` esté en tu PATH
 3. Ejecuta:
    ```cmd
    scripts\build.bat run
    ```
-
----
-
-## 🐧 Linux
-
-```bash
-# Ubuntu/Debian
-sudo apt install gcc liballegro5-dev make
-make -f Makefile.unix && ./SpaceInvaders
-
-# Fedora
-sudo dnf install gcc allegro5-devel make
-make -f Makefile.unix && ./SpaceInvaders
-```
 
 ---
 
@@ -81,21 +86,15 @@ make -f Makefile.unix && ./SpaceInvaders
 ### "No se encuentra Allegro"
 - **macOS:** `brew install allegro`
 - **Linux:** `sudo apt install liballegro5-dev` o equivalente
-- **Windows:** Usa `scripts\install-deps.bat`
+- **Windows:** Usa `pacman -S mingw-w64-x86_64-allegro` (MSYS2)
 
 ### "Error inicializando juego"
-- Ejecuta el juego desde la carpeta raíz del proyecto
+- Ejecuta el juego desde la carpeta raiz del proyecto
 - Verifica que exista la carpeta `resources`
 
----
+### "Permission denied" (macOS)
+```bash
+chmod +x SpaceInvaders ./scripts/*.sh
+```
 
-## 🎮 Controles
-
-- **← →** Mover nave
-- **ESPACIO** Disparar
-- **ESC** Salir
-
----
-
-**¿Más ayuda?** Lee `README.md` para detalles técnicos.
-
+**Mas ayuda?** Lee `README.md` para detalles tecnicos.

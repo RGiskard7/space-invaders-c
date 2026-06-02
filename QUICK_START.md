@@ -1,85 +1,71 @@
-# Guía Rápida de Inicio - Space Invaders
+# Guia Rapida de Inicio - Space Invaders
 
-Esta guía te ayudará a compilar y ejecutar el juego en **menos de 5 minutos**.
+Esta guia te ayudara a compilar y ejecutar el juego en **menos de 5 minutos**.
 
 ---
 
-## El Camino MÁS Rápido (Todos los Sistemas)
+## El Camino MAS Rapido (Todos los Sistemas)
+
+### macOS / Linux
 
 ```bash
-# 1. Clonar el proyecto
+# 1. Instalar dependencias automaticamente
+./scripts/install-deps.sh
+
+# 2. Compilar y ejecutar
+./scripts/build.sh run
+```
+
+### Windows (MSYS2/MinGW)
+
+```cmd
+:: 1. Instala dependencias (una vez, en MSYS2)
+:: pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-allegro mingw-w64-x86_64-pkg-config
+
+:: 2. Clona y entra al proyecto
 git clone https://github.com/RGiskard7/space-invaders-c.git
 cd space-invaders-c
 
-# 2. Instalar dependencias automáticamente
-scripts/install-deps.sh
-
-# 3. Compilar y ejecutar
-scripts/build.sh run
+:: 3. Compila y ejecuta
+mingw32-make -f Makefile.unix
+SpaceInvaders.exe
 ```
-
-**¡Listo!** El script `install-deps.sh` detecta tu sistema operativo (macOS, Ubuntu, Fedora, Arch) e instala Allegro 5 automáticamente.
 
 ---
 
-## Inicio Rápido por Sistema Operativo
+## Inicio Rapido por Sistema Operativo
 
 ### macOS
 
 ```bash
 # 1. Instalar Allegro (solo una vez)
-brew install allegro
+./scripts/install-deps.sh
 
 # 2. Clonar y entrar al proyecto
 git clone https://github.com/RGiskard7/space-invaders-c.git
 cd space-invaders-c
 
 # 3. Compilar y ejecutar
-./build.sh run
+./scripts/build.sh run
 ```
-
-**¡Eso es todo!** El juego debería iniciarse automáticamente.
-
----
-
-### Windows
-
-#### Instalación Automática (Legacy/Manual)
-
-```cmd
-# 1. Clonar el proyecto
-git clone https://github.com/RGiskard7/space-invaders-c.git
-cd space-invaders-c
-
-# 2. Instalar dependencias (Ejecutar como Administrador)
-scripts\install-deps.bat
-
-# 3. Compilar y ejecutar
-scripts\build.bat run
-```
-
-Este script instalará MinGW y Allegro en `C:\mingw64` y `C:\allegro-5.2.9.1-mingw-14.1.0`.
-
----
 
 ### Linux (Ubuntu/Debian)
 
 ```bash
 # 1. Instalar dependencias
-sudo apt update
-sudo apt install build-essential liballegro5-dev
+sudo apt update && sudo apt install -y build-essential gcc liballegro5-dev liballegro-image-5.0-dev liballegro-audio-5.0-dev liballegro-acodec-5.0-dev pkg-config
 
 # 2. Clonar y entrar al proyecto
 git clone https://github.com/RGiskard7/space-invaders-c.git
 cd space-invaders-c
 
 # 3. Compilar y ejecutar
-./build.sh run
+make -f Makefile.unix && ./SpaceInvaders
 ```
 
 ---
 
-## Compilación Manual (Todos los sistemas)
+## Compilacion Manual (Todos los sistemas)
 
 Si los scripts no funcionan, puedes compilar manualmente:
 
@@ -87,15 +73,17 @@ Si los scripts no funcionan, puedes compilar manualmente:
 
 ```bash
 # Compilar
-gcc -c src/main.c -I include $(pkg-config --cflags allegro-5) -o main.o
-gcc -c src/game.c -I include $(pkg-config --cflags allegro-5) -o game.o
-gcc -c src/bullet.c -I include $(pkg-config --cflags allegro-5) -o bullet.o
-gcc -c src/ship.c -I include $(pkg-config --cflags allegro-5) -o ship.o
-gcc -c src/martian.c -I include $(pkg-config --cflags allegro-5) -o martian.o
-gcc -c src/object.c -I include $(pkg-config --cflags allegro-5) -o object.o
+gcc -c src/main.c -I include $(pkg-config --cflags allegro-5) -Wall -g -o main.o
+gcc -c src/game.c -I include $(pkg-config --cflags allegro-5) -Wall -g -o game.o
+gcc -c src/bullet.c -I include $(pkg-config --cflags allegro-5) -Wall -g -o bullet.o
+gcc -c src/ship.c -I include $(pkg-config --cflags allegro-5) -Wall -g -o ship.o
+gcc -c src/martian.c -I include $(pkg-config --cflags allegro-5) -Wall -g -o martian.o
+gcc -c src/object.c -I include $(pkg-config --cflags allegro-5) -Wall -g -o object.o
+gcc -c src/bunker.c -I include $(pkg-config --cflags allegro-5) -Wall -g -o bunker.o
 
-# Enlazar
-gcc -o SpaceInvaders *.o $(pkg-config --libs allegro-5 allegro_main-5 allegro_image-5 allegro_font-5 allegro_ttf-5 allegro_primitives-5)
+# Enlazar (con todas las librerias necesarias, incluyendo audio)
+gcc -o SpaceInvaders main.o game.o bullet.o ship.o martian.o object.o bunker.o \
+    $(pkg-config --libs allegro-5 allegro_main-5 allegro_image-5 allegro_font-5 allegro_ttf-5 allegro_primitives-5 allegro_audio-5 allegro_acodec-5)
 
 # Ejecutar
 ./SpaceInvaders
@@ -103,10 +91,8 @@ gcc -o SpaceInvaders *.o $(pkg-config --libs allegro-5 allegro_main-5 allegro_im
 
 ### En Windows (con MinGW):
 
-Asegúrate de que `C:\mingw64\bin` esté en tu PATH.
-
 ```cmd
-mingw32-make
+mingw32-make -f Makefile.unix
 SpaceInvaders.exe
 ```
 
@@ -114,145 +100,43 @@ SpaceInvaders.exe
 
 ## Controles del Juego
 
-| Tecla | Acción |
-|-------|--------|
+| Tecla | Accion |
+| ----- | ------ |
 | **←** | Mover izquierda |
 | **→** | Mover derecha |
 | **ESPACIO** | Disparar |
 | **ESC** | Salir |
+| **P** | Pausar |
 
 ---
 
-## Compilación desde Visual Studio Code
+## Solucion de Problemas
 
-### 1. Abrir el proyecto en VSCode
+### "undefined reference to..." al compilar
 
+Faltan las librerias de audio de Allegro. Asegurate de incluir:
+- `allegro_audio-5`
+- `allegro_acodec-5`
+
+Con pkg-config:
 ```bash
-code space-invaders-c
+$(pkg-config --libs allegro-5 allegro_main-5 allegro_image-5 allegro_font-5 allegro_ttf-5 allegro_primitives-5 allegro_audio-5 allegro_acodec-5)
 ```
 
-### 2. Compilar con atajos de teclado
+### "Permission denied" al ejecutar en macOS/Linux
 
-- **macOS/Linux**: Presiona `Cmd+Shift+B` (macOS) o `Ctrl+Shift+B` (Linux)
-- **Windows**: Presiona `Ctrl+Shift+B`
+```bash
+chmod +x scripts/*..sh SpaceInvaders
+```
 
-### 3. Ejecutar con Debug
+### El juego no muestra graficos
 
-- **Windows/Linux/macOS**: Presiona `F5`.
-  - VS Code detectará tus cambios, recompilará automáticamente y lanzará el juego.
-- **Solo Compilar**: Presiona `Ctrl+Shift+B`.
-
-### 4. Tareas disponibles en VSCode
-
-Presiona `Cmd+Shift+P` (macOS) o `Ctrl+Shift+P` (Windows/Linux) y escribe "Tasks: Run Task":
-
-- **Build Space Invaders (macOS/Linux)** - Compila el proyecto
-- **Build and Run (macOS/Linux)** - Compila y ejecuta
-- **Clean Build Files** - Limpia archivos de compilación
-- **Check Dependencies** - Verifica que Allegro esté instalado
+- Ejecuta siempre desde el directorio raiz: `cd space-invaders-c && ./SpaceInvaders`
+- Verifica que exista la carpeta `resources`
 
 ---
 
-## Solución de Problemas Comunes
-
-### ❌ "allegro not found" o "pkg-config: command not found"
-
-**macOS:**
-```bash
-brew install pkg-config allegro
-```
-
-**Linux:**
-```bash
-sudo apt install pkg-config liballegro5-dev
-```
-
-**Windows (MSYS2):**
-```bash
-pacman -S mingw-w64-x86_64-pkg-config mingw-w64-x86_64-allegro
-```
-
----
-
-### ❌ "Permission denied" al ejecutar en macOS/Linux
-
-```bash
-chmod +x build.sh
-chmod +x SpaceInvaders
-```
-
----
-
-### ❌ El juego no muestra gráficos o dice "Error initializing game"
-
-**Problema:** Las rutas de recursos no son correctas o estás ejecutando desde un directorio incorrecto.
-
-**Solución:**
-
-1. **Ejecuta siempre desde el directorio raíz:**
-```bash
-cd /ruta/completa/a/space-invaders-c
-./SpaceInvaders
-```
-
-2. **Verifica que las rutas en `include/config.h` sean correctas:**
-
-Las rutas deben ser relativas al directorio raíz (donde está el ejecutable):
-```c
-#define BACKGROUND_IMG_RSC "resources/images/background.bmp"  // ✅ Correcto
-```
-
-NO deben tener `../` al principio si el ejecutable está en el directorio raíz.
-
-3. **Usa el script de verificación:**
-```bash
-scripts/test_resources.sh
-```
-
----
-
-### ❌ "undefined reference to..." al compilar
-
-Falta enlazar alguna biblioteca de Allegro. Asegúrate de que el comando de enlace incluya:
-
-```bash
--lallegro_monolith -lallegro_main -lallegro_image -lallegro_font -lallegro_ttf -lallegro_primitives
-```
-
-O en macOS/Linux con pkg-config:
-
-```bash
-$(pkg-config --libs allegro-5 allegro_main-5 allegro_image-5 allegro_font-5 allegro_ttf-5 allegro_primitives-5)
-```
-
----
-
-### ❌ En Windows: "mingw32-make: command not found"
-
-**Opción 1:** Usa `make` en lugar de `mingw32-make`:
-```cmd
-make
-```
-
-**Opción 2:** Añade MinGW al PATH:
-```cmd
-set PATH=%PATH%;C:\MinGW\bin
-```
-
-**Opción 3:** Usa MSYS2 (recomendado):
-- Descarga de: https://www.msys2.org/
-- Instala GCC y Make:
-```bash
-pacman -S mingw-w64-x86_64-gcc make
-```
-
----
-
-## Verificar Instalación
-
-Ejecuta estos comandos para verificar que todo está instalado correctamente:
-
-### macOS/Linux:
+## Verificar Instalacion
 
 ```bash
 # Verificar GCC
@@ -261,31 +145,24 @@ gcc --version
 # Verificar Allegro
 pkg-config --modversion allegro-5
 
-# Verificar automáticamente todas las dependencias
-make -f Makefile.unix check-deps
-```
-
-### Windows (MSYS2):
-
-```bash
-gcc --version
-pacman -Qi mingw-w64-x86_64-allegro
+# Verificar recursos
+./scripts/test_resources.sh
 ```
 
 ---
 
-## Próximos Pasos
+## Proximos Pasos
 
 Una vez que el juego funcione:
 
 1. **Modifica la dificultad** editando `include/config.h`
 2. **Añade nuevas funcionalidades** siguiendo la estructura modular
-3. **Consulta el README.md completo** para información detallada sobre la arquitectura
+3. **Consulta el README.md completo** para informacion detallada
 
 ---
 
-## ¿Necesitas Ayuda?
+## Necesitas Ayuda?
 
-- **Problemas técnicos**: [Abre un issue](https://github.com/RGiskard7/space-invaders-c/issues)
-- **Documentación completa**: [Ver README.md](README.md)
-- **Código fuente**: [GitHub Repository](https://github.com/RGiskard7/space-invaders-c)
+- **Problemas tecnicos**: [Abre un issue](https://github.com/RGiskard7/space-invaders-c/issues)
+- **Documentacion completa**: [Ver README.md](README.md)
+- **Codigo fuente**: [GitHub Repository](https://github.com/RGiskard7/space-invaders-c)

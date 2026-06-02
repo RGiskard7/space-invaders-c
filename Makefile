@@ -28,7 +28,7 @@ $(EJECUTABLES): $(OBJS)
 	@echo "Makefile SpaceInvaders hecho por RGiskard7"
 	@echo "Ejecuta make help para mas informacion"
 	@echo "----------------------------------------------------------"
-	$(CC) $(CFLAGS) -o $(EJECUTABLES) $(OBJS) -L $(PATH_ALLEGRO)$(LIB_ALLEGRO) -lallegro_monolith -lallegro_main -lallegro_image -lallegro_font -lallegro_ttf
+	$(CC) $(CFLAGS) -o $(EJECUTABLES) $(OBJS) -L $(PATH_ALLEGRO)$(LIB_ALLEGRO) -lallegro_monolith -lallegro_main -lallegro_image -lallegro_font -lallegro_ttf -lallegro_audio -lallegro_acodec
 
 # Regla para compilar main.o
 main.o: src/main.c

@@ -1,7 +1,6 @@
 # Makefile para Windows (MSYS2/MingW)
-# Space Invaders en C con Allegro Lua
+# Space Invaders en C con Allegro 5
 # Autor: RGiskard7
-# Última actualización: Octubre 2024
 
 CC=gcc
 CPLUS=g++
@@ -9,7 +8,7 @@ CFLAGS=-g -Wall -pedantic
 EXECUTABLE=SpaceInvaders.exe
 
 # Detectar librerías de Allegro con pkg-config
-ALLEGRO_LIBS=$(shell pkg-config --libs allegro-5 allegro_main-5 allegro_image-5 allegro_font-5 allegro_ttf-5 allegro_primitives-5)
+ALLEGRO_LIBS=$(shell pkg-config --libs allegro-5 allegro_main-5 allegro_image-5 allegro_font-5 allegro_ttf-5 allegro_primitives-5 allegro_audio-5 allegro_acodec-5)
 ALLEGRO_CFLAGS=$(shell pkg-config --cflags allegro-5)
 
 # Directorios

@@ -1,16 +1,16 @@
-# 🎮 Cómo Ejecutar Space Invaders
+# 🎮 Como Ejecutar Space Invaders
 
-Este documento explica cómo compilar y ejecutar el juego en **macOS** y **Windows**.
+Este documento explica como compilar y ejecutar el juego en **macOS**, **Linux** y **Windows**.
 
 ---
 
 ## 🍎 macOS
 
-### Primera Vez (Instalación)
+### Primera Vez (Instalacion)
 
 ```bash
-# 1. Instalar Allegro (solo una vez)
-scripts/install-deps.sh
+# 1. Instalar dependencias automaticamente
+./scripts/install-deps.sh
 
 # 2. Compilar
 make -f Makefile.unix
@@ -23,19 +23,19 @@ make -f Makefile.unix
 
 ```bash
 # Compilar y ejecutar en un solo comando
-scripts/build.sh run
+./scripts/build.sh run
 
 # O separado:
 make -f Makefile.unix
 ./SpaceInvaders
 ```
 
-### Cambiar Tamaño de Ventana
+### Cambiar Tamano de Ventana
 
-Edita `include/config.h` líneas 30-31:
+Edita `include/config.h` lineas ~50:
 ```c
-#define DISPLAY_HEIGHT 900  // Cambia este número
-#define DISPLAY_WIDTH 900   // Cambia este número
+#define DISPLAY_HEIGHT 900   // Cambia este numero
+#define DISPLAY_WIDTH 900    // Cambia este numero
 ```
 
 Luego recompila:
@@ -46,77 +46,89 @@ make -f Makefile.unix
 
 ---
 
-## 🪟 Windows
+## 🐧 Linux (Ubuntu/Debian)
 
-### Opción A: Script Automático (Recomendado)
+### Primera Vez
 
-#### Primera Vez - Instalación
-```cmd
-:: Ejecutar como Administrador
-scripts\install-deps.bat
+```bash
+sudo apt update
+sudo apt install build-essential gcc liballegro5-dev liballegro-image-5.0-dev liballegro-audio-5.0-dev liballegro-acodec-5.0-dev pkg-config
+
+# Compilar y ejecutar (desde la carpeta del proyecto)
+make -f Makefile.unix
+make -f Makefile.unix run
 ```
 
-El script descargará e instalará:
-- **MinGW 14.1.0** en `C:\mingw64`
-- **Allegro 5.2.9** en `C:\allegro-5.2.9.1-mingw-14.1.0`
+### Otras Distribuciones
 
-#### Ejecución
+**Fedora:**
+```bash
+sudo dnf install gcc make allegro5-devel pkg-config
+make -f Makefile.unix
+```
+
+**Arch:**
+```bash
+sudo pacman -S base-devel allegro pkg-config
+make -f Makefile.unix
+```
+
+---
+
+## 🪟 Windows
+
+### Opcion A: MSYS2/MinGW (Recomendado)
+
+#### Primera Vez - Instalacion
+```cmd
+:: Desde MSYS2 MinGW-w64
+pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-allegro mingw-w64-x86_64-pkg-config
+```
+
+#### Ejecucion
+```cmd
+mingw32-make -f Makefile.unix
+SpaceInvaders.exe
+```
+
+### Opcion B: Script con MinGW Manual
+
+Asegurate de que `C:\mingw64\bin` esté en tu PATH.
+
 ```cmd
 scripts\build.bat run
 ```
 
-### Opción B: Manual
+### Cambiar Tamano de Ventana
 
-#### Primera Vez - Instalación Manual
-1. Descarga **MinGW 14.1.0** (WinLibs) y extráelo en `C:\mingw64`.
-2. Descarga **Allegro 5.2.9** y extráelo en `C:\allegro-5.2.9.1-mingw-14.1.0`.
-
-#### Compilación y Ejecución
-Asegúrate de que `C:\mingw64\bin` esté en tu PATH.
-
-```cmd
-mingw32-make
-SpaceInvaders.exe
-```
-
-### Cambiar Tamaño de Ventana
-
-Edita `include\config.h` líneas 30-31:
-```c
-#define DISPLAY_HEIGHT 900  // Cambia este número
-#define DISPLAY_WIDTH 900   // Cambia este número
-```
+Edita `include\config.h` y aumenta `DISPLAY_HEIGHT` / `DISPLAY_WIDTH`.
 
 Luego recompila:
 ```cmd
-mingw32-make clean
-mingw32-make
+mingw32-make -f Makefile.unix clean
+mingw32-make -f Makefile.unix
 ```
 
 ---
 
-## 🎯 Verificación Rápida
+## 🎯 Verificacion Rapida
 
-En **ambos sistemas**, puedes verificar que los recursos son accesibles:
+En **todos los sistemas**, puedes verificar que los recursos son accesibles:
 
-### macOS/Linux:
 ```bash
-scripts/test_resources.sh
+./scripts/test_resources.sh
 ```
 
-### Windows (MSYS2):
+Tambien puedes verificar dependencias con el Makefile:
 ```bash
-scripts/test_resources.sh
+make -f Makefile.unix check-deps
 ```
-
-### Windows (CMD):
-Verifica manualmente que exista la carpeta `resources` al mismo nivel que el ejecutable.
 
 ---
 
-## ⚙️ Configuración Actual
+## ⚙️ Configuracion Actual
 
-- **Resolución de ventana:** 600x600 píxeles (igual en Windows y macOS)
+- **Resolucion de ventana:** 600x600 pixeles
 - **Vidas iniciales:** 3
 - **Enemigos:** 55 marcianos (11x5)
 - **Velocidad de nave:** 6
@@ -128,40 +140,51 @@ Para cambiar estos valores, edita `include/config.h` y recompila.
 
 ## 🎮 Controles
 
-| Tecla | Acción |
-|-------|--------|
+| Tecla | Accion |
+| ----- | ------ |
 | **←** | Mover izquierda |
 | **→** | Mover derecha |
 | **ESPACIO** | Disparar |
 | **ESC** | Salir |
+| **P** | Pausar/Reanudar |
+| **ENTER** | Reiniciar (tras Game Over) |
 
 ---
 
 ## ⚠️ Importante
 
-- **SIEMPRE ejecuta el juego desde el directorio raíz del proyecto**
+- **SIEMPRE ejecuta el juego desde el directorio raiz del proyecto**
 - El ejecutable debe estar al mismo nivel que la carpeta `resources/`
-- Si mueve el ejecutable a otra ubicación, mueve también la carpeta `resources/`
+- Si mueves el ejecutable a otra ubicacion, mueve tambien la carpeta `resources/`
 
 ---
 
 ## 🐛 Problemas Comunes
 
 ### "Error initializing game"
-- Estás ejecutando desde el directorio incorrecto
-- Ejecuta desde el directorio raíz: `./SpaceInvaders` (macOS) o `SpaceInvaders.exe` (Windows)
+- Estas ejecutando desde el directorio incorrecto
+- Ejecuta desde el directorio raiz: `./SpaceInvaders`
 
 ### "Cannot find resources"
 - Verifica que la carpeta `resources` esté al mismo nivel que el ejecutable
-- Usa `./test_resources.sh` para diagnóstico
+- Usa `./scripts/test_resources.sh` para diagnostico
 
-### Ventana muy pequeña
+### Ventana muy pequena
 - Edita `include/config.h` y aumenta `DISPLAY_HEIGHT` y `DISPLAY_WIDTH`
 - Recompila el proyecto
 
-### No compila en Windows
-- Asegúrate de tener MinGW o MSYS2 instalado
-- Verifica que GCC esté en el PATH: `gcc --version`
+### No compila: "undefined reference"
+- Te faltan las librerias de audio: `allegro_audio-5` y `allegro_acodec-5`
+- Usa `./scripts/build.sh` o `make -f Makefile.unix` que incluyen automaticamente todas
+
+### Permission denied (macOS)
+```bash
+chmod +x SpaceInvaders
+chmod +x scripts/build.sh
+chmod +x scripts/install-deps.sh
+chmod +x scripts/test_resources.sh
+./SpaceInvaders
+```
 
 ---
 
@@ -170,17 +193,17 @@ Para cambiar estos valores, edita `include/config.h` y recompila.
 ```
 space-invaders-c/
 ├── SpaceInvaders           (macOS/Linux)
-├── SpaceInvaders.exe       (Windows)
-├── resources/              ← DEBE estar aquí
+├── resources/              ← DEBE estar aqui
 │   ├── images/
 │   ├── sounds/
 │   └── fonts/
 ├── src/
 ├── include/
-└── ...
+├── scripts/
+├── Makefile.unix
+└── Makefile
 ```
 
 ---
 
-**El juego está configurado para verse IGUAL en macOS y Windows (900x900 píxeles).**
-
+**El juego esta configurado para verse igual en todos los sistemas (600x600 pixeles por defecto).**

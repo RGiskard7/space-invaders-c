@@ -14,7 +14,7 @@
 #include <allegro5/allegro_acodec.h>
 #include <allegro5/allegro_audio.h>
 
-typedef enum { STATE_PLAYING, STATE_GAME_OVER, STATE_WIN } GAME_STATE;
+typedef enum { STATE_PLAYING, STATE_GAME_OVER, STATE_NAME_INPUT, STATE_WIN } GAME_STATE;
 
 /**
  * @struct _game
@@ -77,6 +77,11 @@ struct _game {
   bool ship_exploding;                     ///< Flag for ship death animation
   int ship_explosion_timer;                ///< Timer for death animation
   GAME_STATE state;                        ///< Current game state
+
+  // High scores
+  TOP_ENTRY top_scores[MAX_TOP_SCORES + 1]; ///< Array of top scores
+  int name_input_cursor;                   ///< Current cursor position for name input
+  char name_buffer[MAX_NAME_LENGTH + 3];   ///< Buffer for name input (3 + \0 + newline)
 };
 
 // Function Declarations
@@ -293,6 +298,11 @@ STATUS game_destroy(GAME *game) {
   if (game->ufo_img) {
     al_destroy_bitmap(game->ufo_img);
     game->ufo_img = NULL;
+  }
+
+  if (game->ufo) {
+    obj_destroy(game->ufo);
+    game->ufo = NULL;
   }
 
   if (game->screen) {
