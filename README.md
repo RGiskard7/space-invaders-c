@@ -1,566 +1,375 @@
-# Space Invaders en C
+# Space Invaders
 
 <div align="center">
   <img src="https://github.com/user-attachments/assets/48a46d8a-0180-436b-8c95-7769712331ff" alt="Space Invaders" width="600"/>
+</div
+
+> **Quick Start (macOS/Linux)**
+> ```bash
+> scripts/install-deps.sh
+> scripts/build.sh run
+> ```
+
 </div>
 
-> **⚡ Inicio Rápido:**
-> Si quieres empezar inmediatamente, ejecuta:
-> ```bash
-> scripts/install-deps.sh  # Instala Allegro y dependencias automáticamente
-> scripts/build.sh run     # Compila y ejecuta el juego
-> ```
->
-> O consulta [`QUICK_START.md`](QUICK_START.md) para instrucciones detalladas.
+---
+
+## Overview
+
+Space Invaders is a faithful recreation of the classic 1978 arcade game, implemented in C using the Allegro 5 graphics library. The project demonstrates structured programming, dynamic memory management, collision detection, and 2D sprite rendering.
+
+### Features
+
+- Player-controlled spaceship with lateral movement and one-at-a-time shooting
+- 55 alien invaders in a 11x5 grid formation with zigzag movement
+- Progressive difficulty: aliens speed up as their numbers decrease
+- Four destructible bunkers (damage persists between waves)
+- Mystery UFO with random spawn and bonus points
+- Multi-level progression with increasing difficulty
+- Persistent high score table (top 5 scores with player initials)
+- Authentic arcade sound effects (movement, shooting, explosions)
+- Fully configurable via `config.h`
 
 ---
 
-## 📑 Tabla de Contenidos
-
-- [Space Invaders en C](#space-invaders-en-c)
-  - [📑 Tabla de Contenidos](#-tabla-de-contenidos)
-  - [📋 Descripción del Proyecto](#-descripción-del-proyecto)
-    - [Características Principales](#características-principales)
-  - [🏗️ Arquitectura del Proyecto](#️-arquitectura-del-proyecto)
-  - [🔧 Requisitos del Sistema](#-requisitos-del-sistema)
-    - [Software Necesario](#software-necesario)
-    - [Sistemas Operativos Soportados](#sistemas-operativos-soportados)
-  - [📦 Instalación de Dependencias](#-instalación-de-dependencias)
-    - [En macOS](#en-macos)
-    - [En Windows](#en-windows)
-      - [Opción 1: Instalación Automática (Recomendado)](#opción-1-instalación-automática-recomendado)
-      - [Opción 2: Instalación Manual](#opción-2-instalación-manual)
-      - [Opción 2: Instalación manual de Allegro](#opción-2-instalación-manual-de-allegro)
-    - [En Linux (Ubuntu/Debian)](#en-linux-ubuntudebian)
-    - [En Linux (Fedora)](#en-linux-fedora)
-  - [🚀 Compilación y Ejecución](#-compilación-y-ejecución)
-    - [1. Clonar el Repositorio](#1-clonar-el-repositorio)
-    - [2. Compilar el Proyecto](#2-compilar-el-proyecto)
-      - [En macOS/Linux](#en-macoslinux)
-      - [En Windows](#en-windows-1)
-    - [3. Ejecutar el Juego](#3-ejecutar-el-juego)
-      - [En macOS/Linux](#en-macoslinux-1)
-      - [En Windows](#en-windows-2)
-  - [🎮 Controles del Juego](#-controles-del-juego)
-  - [⚙️ Configuración del Juego](#️-configuración-del-juego)
-  - [🐛 Solución de Problemas](#-solución-de-problemas)
-    - [Error: "Allegro not found" (macOS/Linux)](#error-allegro-not-found-macoslinux)
-    - [Error: "Cannot find -lallegro\_monolith" (Windows)](#error-cannot-find--lallegro_monolith-windows)
-    - [El juego se ejecuta pero no muestra gráficos o dice "Error initializing game"](#el-juego-se-ejecuta-pero-no-muestra-gráficos-o-dice-error-initializing-game)
-    - [Error de compilación: "undefined reference to..."](#error-de-compilación-undefined-reference-to)
-    - [En macOS: "permission denied" al ejecutar](#en-macos-permission-denied-al-ejecutar)
-  - [📝 Desarrollo y Contribución](#-desarrollo-y-contribución)
-    - [Compilar en Modo Debug](#compilar-en-modo-debug)
-    - [Ejecutar con Valgrind (detección de memory leaks)](#ejecutar-con-valgrind-detección-de-memory-leaks)
-    - [Estructura de Commits](#estructura-de-commits)
-    - [Roadmap del Proyecto](#roadmap-del-proyecto)
-  - [📜 Licencia](#-licencia)
-  - [🤝 Contribuciones](#-contribuciones)
-    - [Áreas de Mejora](#áreas-de-mejora)
-  - [📞 Contacto](#-contacto)
-  - [📚 Referencias y Recursos](#-referencias-y-recursos)
-  - [🙏 Agradecimientos](#-agradecimientos)
-
----
-
-## 📋 Descripción del Proyecto
-
-**Space Invaders en C** es una implementación del clásico juego arcade desarrollada en C utilizando la biblioteca gráfica **Allegro 5**. El proyecto demuestra programación estructurada, gestión de memoria dinámica, detección de colisiones, y renderizado de gráficos 2D.
-
-### Características Principales
-
-- **Nave espacial controlable** con movimiento lateral y disparo
-- **55 invasores alienígenas** organizados en formación (11x5)
-- **Sistema de colisiones** entre proyectiles y entidades
-- **Sistema de puntuación** por tipo de enemigo (10/20/30 puntos)
-- **Sistema de vidas** (3 vidas iniciales)
-- **Sprites y animaciones** personalizadas
-- **Efectos de sonido** integrados
-- **Configuración modular** en `config.h`
-
----
-
-## 🏗️ Arquitectura del Proyecto
+## Project Structure
 
 ```
 space-invaders-c/
-├── scripts/             # Scripts de automatización
-│   ├── install-deps.sh  # Instalador de dependencias (macOS/Linux)
-│   ├── install-deps.bat # Instalador de dependencias (Windows)
-│   ├── build.sh         # Script de compilación (macOS/Linux)
-│   ├── build.bat        # Script de compilación (Windows)
-│   └── test_resources.sh # Verificador de recursos
-├── include/             # Archivos de cabecera (.h)
-│   ├── bullet.h         # Gestión de proyectiles
-│   ├── config.h         # Configuración centralizada
-│   ├── game.h           # Lógica principal del juego
-│   ├── martian.h        # Lógica de enemigos
-│   ├── object.h         # Objetos genéricos (explosiones, etc.)
-│   ├── ship.h           # Lógica de la nave del jugador
-│   └── types.h          # Tipos y enumeraciones
-├── src/                 # Código fuente (.c)
-│   ├── main.c           # Punto de entrada
-│   ├── game.c           # Bucle principal y gestión del juego
-│   ├── bullet.c         # Implementación de proyectiles
-│   ├── ship.c           # Implementación de la nave
-│   ├── martian.c        # Implementación de enemigos
-│   └── object.c         # Implementación de objetos
-├── resources/           # Recursos del juego
-│   ├── images/          # Sprites y gráficos (.bmp, .png)
-│   ├── sounds/          # Efectos de sonido (.wav)
-│   └── fonts/           # Fuentes (.ttf)
-├── lib/                 # Bibliotecas de Allegro (Windows)
-├── Makefile             # Makefile para Windows
-├── Makefile.unix        # Makefile para macOS/Linux
-└── README.md            # Este archivo
+├── scripts/              # Automation scripts
+│   ├── install-deps.sh   # Dependency installer (macOS/Linux)
+│   ├── install-deps.bat  # Dependency installer (Windows)
+│   ├── build.sh          # Build script (macOS/Linux)
+│   ├── build.bat         # Build script (Windows)
+│   └── test_resources.sh # Resource verification
+├── include/              # Header files
+│   ├── types.h           # Types and enumerations
+│   ├── config.h          # Centralized configuration
+│   ├── object.h          # Generic game objects
+│   ├── bullet.h          # Projectile management
+│   ├── bunker.h          # Shield/destructible objects
+│   ├── ship.h            # Player ship
+│   ├── martian.h         # Enemy aliens
+│   └── game.h            # Game state management
+├── src/                  # Source files
+│   ├── main.c            # Entry point
+│   ├── game.c            # Core game logic and main loop
+│   ├── bullet.c          # Projectile implementation
+│   ├── ship.c            # Player ship implementation
+│   ├── martian.c         # Alien implementation
+│   ├── object.c          # Generic object implementation
+│   └── bunker.c          # Destructible bunker implementation
+├── resources/            # Game assets
+│   ├── images/           # Sprites and graphics (.bmp, .png)
+│   ├── sounds/           # Sound effects (.wav)
+│   └── fonts/            # Text fonts (.ttf)
+├── Makefile              # Makefile (Windows/minimal)
+├── Makefile.unix         # Makefile (macOS/Linux)
+├── Makefile.windows      # Makefile (Windows/MSYS2)
+└── README.md             # This file
 ```
 
 ---
 
-## 🔧 Requisitos del Sistema
+## Requirements
 
-### Software Necesario
+- **C Compiler**: GCC (MinGW-w64 on Windows, GCC/Clang on macOS, build-essential on Linux)
+- **Allegro 5**: Version 5.2 or later with audio support
+- **Make**: Build tool (optional on Windows, use `mingw32-make`)
+- **pkg-config**: Automatic library detection (macOS/Linux)
 
-- **Compilador C**: GCC (recomendado: MinGW-w64 para Windows, GCC/Clang para macOS)
-- **Biblioteca Allegro 5**: Versión 5.2 o superior
-- **Make**: Para usar el Makefile (opcional en Windows, usar mingw32-make)
-- **Git**: Para clonar el repositorio
+### Supported Platforms
 
-### Sistemas Operativos Soportados
-
-- **Windows** 10/11 (x64)
-- **macOS** 10.15+ (Catalina o superior)
+- **Windows** 10/11 (x64) via MSYS2/MinGW or manual MinGW installation
+- **macOS** 10.15+ (Catalina or later)
 - **Linux** (Ubuntu, Debian, Fedora, Arch)
 
 ---
 
-## 📦 Instalación de Dependencias
+## Setup and Installation
 
-### En macOS
+### macOS
 
-1. **Instalar Homebrew** (si no lo tienes):
+Install Homebrew if not already installed:
+
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-2. **Instalar Allegro 5**:
+Then install dependencies:
+
 ```bash
-brew install allegro
+./scripts/install-deps.sh
 ```
 
-3. **Verificar instalación**:
+Or install manually:
+
+```bash
+brew install allegro gcc
+```
+
+Verify installation:
+
 ```bash
 pkg-config --modversion allegro-5
 ```
 
-### En Windows
+### Linux
 
-#### Opción 1: Instalación Automática (Legacy/Manual)
+**Ubuntu/Debian:**
+```bash
+sudo apt update
+sudo apt install build-essential gcc liballegro5-dev liballegro-image-5.0-dev liballegro-audio-5.0-dev liballegro-acodec-5.0-dev pkg-config
+```
 
-Ejecuta el instalador desde CMD o PowerShell **como Administrador**:
+**Fedora:**
+```bash
+sudo dnf install gcc make allegro5-devel allegro5 pkg-config
+```
+
+**Arch Linux:**
+```bash
+sudo pacman -S base-devel allegro pkg-config
+```
+
+### Windows
+
+Install MSYS2 from https://www.msys2.org/. Open **MSYS2 MinGW-w64** and run:
+
+```bash
+pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-allegro mingw-w64-x86_64-pkg-config
+```
+
+Alternatively, use the bundled setup script (run in CMD or PowerShell as Administrator):
 
 ```cmd
 scripts\install-deps.bat
 ```
 
-Este script descargará e instalará automáticamente:
-- **MinGW 14.1.0** en `C:\mingw64`
-- **Allegro 5.2.9** en `C:\allegro-5.2.9.1-mingw-14.1.0`
-
-#### Opción 2: Instalación Manual
-
-Si prefieres hacerlo tú mismo:
-1. Descarga **MinGW 14.1.0** (WinLibs) y extráelo en `C:\mingw64`.
-2. Descarga **Allegro 5.2.9** (MinGW 13.2.0 compatible) y extráelo en `C:\allegro-5.2.9.1-mingw-14.1.0`.
-
-#### Opción 2: Instalación manual de Allegro
-
-1. Descarga Allegro 5.2 precompilado desde: https://github.com/liballeg/allegro5/releases
-2. Extrae en `C:\allegro-5.2.9.1-mingw-14.1.0\` (o actualiza las rutas en el Makefile)
-
-### En Linux (Ubuntu/Debian)
-
-```bash
-sudo apt update
-sudo apt install build-essential
-sudo apt install liballegro5-dev liballegro5.2
-```
-
-### En Linux (Fedora)
-
-```bash
-sudo dnf install gcc make
-sudo dnf install allegro5-devel allegro5
-```
+This installs MinGW 14.1.0 to `C:\mingw64` and Allegro 5.2.9 to `C:\allegro-5.2.9.1-mingw-14.1.0`.
 
 ---
 
-## 🚀 Compilación y Ejecución
+## Building and Running
 
-### 1. Clonar el Repositorio
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/RGiskard7/space-invaders-c.git
 cd space-invaders-c
 ```
 
-### 2. Compilar el Proyecto
+### 2. Build the Project
 
-#### En macOS/Linux
-
-**Opción A: Crear un Makefile nuevo para Unix**
-
-Dado que el Makefile actual está configurado para Windows, crea un archivo `Makefile.unix`:
-
-```makefile
-# Makefile.unix para macOS/Linux
-
-CC=gcc
-CFLAGS=-g -Wall -pedantic
-EXECUTABLE=SpaceInvaders
-
-# Detección automática de pkg-config
-ALLEGRO_LIBS=$(shell pkg-config --libs allegro-5 allegro_main-5 allegro_image-5 allegro_font-5 allegro_ttf-5 allegro_primitives-5)
-ALLEGRO_CFLAGS=$(shell pkg-config --cflags allegro-5)
-
-# Archivos fuente y objetos
-SRCS=src/main.c src/game.c src/bullet.c src/ship.c src/martian.c src/object.c
-OBJS=main.o game.o bullet.o ship.o martian.o object.o
-
-# Regla por defecto
-all: $(EXECUTABLE)
-
-# Regla para compilar el ejecutable
-$(EXECUTABLE): $(OBJS)
-	@echo "Compilando Space Invaders..."
-	$(CC) $(CFLAGS) -o $(EXECUTABLE) $(OBJS) $(ALLEGRO_LIBS)
-	@echo "Compilacion exitosa: ./$(EXECUTABLE)"
-
-# Reglas para compilar objetos
-%.o: src/%.c
-	$(CC) $(ALLEGRO_CFLAGS) -I include $(CFLAGS) -c $< -o $@
-
-# Limpiar archivos generados
-clean:
-	rm -f *.o $(EXECUTABLE)
-
-# Ejecutar el juego
-run: all
-	./$(EXECUTABLE)
-
-# Empaquetar
-dist: clean
-	tar -czf space-invaders.tar.gz src/ include/ resources/ Makefile.unix README.md
-
-.PHONY: all clean run dist
-```
-
-Luego compila con:
-
+**macOS/Linux:**
 ```bash
-make -f Makefile.unix
+make -f Makefile.unix          # Build
+make -f Makefile.unix run      # Build and run
+make -f Makefile.unix clean    # Clean build artifacts
 ```
 
-**Opción B: Compilación manual**
-
+**Windows (MSYS2):**
 ```bash
-# Compilar archivos objeto
-gcc -c src/main.c -I include $(pkg-config --cflags allegro-5) -o main.o
-gcc -c src/game.c -I include $(pkg-config --cflags allegro-5) -o game.o
-gcc -c src/bullet.c -I include $(pkg-config --cflags allegro-5) -o bullet.o
-gcc -c src/ship.c -I include $(pkg-config --cflags allegro-5) -o ship.o
-gcc -c src/martian.c -I include $(pkg-config --cflags allegro-5) -o martian.o
-gcc -c src/object.c -I include $(pkg-config --cflags allegro-5) -o object.o
-
-# Enlazar
-gcc -o SpaceInvaders main.o game.o bullet.o ship.o martian.o object.o \
-    $(pkg-config --libs allegro-5 allegro_main-5 allegro_image-5 allegro_font-5 allegro_ttf-5 allegro_primitives-5)
+make -f Makefile.windows          # Build
+mingw32-make -f Makefile.unix     # Alternative
 ```
 
-#### En Windows
+**Manual compilation (macOS/Linux):**
+```bash
+gcc -c src/main.c -I include $(pkg-config --cflags allegro-5) -g -o main.o
+gcc -c src/game.c    -I include $(pkg-config --cflags allegro-5) -g -o game.o
+gcc -c src/bullet.c  -I include $(pkg-config --cflags allegro-5) -g -o bullet.o
+gcc -c src/ship.c    -I include $(pkg-config --cflags allegro-5) -g -o ship.o
+gcc -c src/martian.c -I include $(pkg-config --cflags allegro-5) -g -o martian.o
+gcc -c src/object.c  -I include $(pkg-config --cflags allegro-5) -g -o object.o
+gcc -c src/bunker.c  -I include $(pkg-config --cflags allegro-5) -g -o bunker.o
 
-**Opción A: Script Automático (Recomendado)**
-
-```cmd
-scripts\build.bat run
+gcc -o SpaceInvaders main.o game.o bullet.o ship.o martian.o object.o bunker.o \
+    $(pkg-config --libs allegro-5 allegro_main-5 allegro_image-5 allegro_font-5 \
+                    allegro_ttf-5 allegro_primitives-5 allegro_audio-5 allegro_acodec-5)
 ```
 
-**Opción B: Manual (MinGW)**
-
-Asegúrate de que `C:\mingw64\bin` esté en tu PATH y ejecuta:
-
+**Manual compilation (Windows/MinGW):**
 ```cmd
-mingw32-make
+mingw32-make -f Makefile.unix
 SpaceInvaders.exe
 ```
 
-### 3. Ejecutar el Juego
+### 3. Launch the Game
 
-#### En macOS/Linux
-
+**macOS/Linux:**
 ```bash
 ./SpaceInvaders
 ```
 
-#### En Windows
-
-```bash
+**Windows:**
+```cmd
 SpaceInvaders.exe
 ```
 
-### 4. Ejecutar desde Visual Studio Code (Recomendado)
+### 4. Visual Studio Code
 
-Si usas VS Code, el proyecto ya está configurado para compilar y ejecutar fácilmente:
+The project is configured for VS Code debugging (`.vscode` directory):
 
-1.  **Compilar y Jugar**: Pulsa `F5`.
-    *   Esto recompilará automáticamente cualquier cambio y lanzará el juego con el depurador.
-2.  **Solo Compilar**: Pulsa `Ctrl+Shift+B`.
-    *   Útil para verificar errores sin abrir el juego.
+- **F5**: Compile and launch with debugger
+- **Ctrl+Shift+B / Cmd+Shift+B**: Build only
 
 ---
 
-## 🎮 Controles del Juego
+## Controls
 
-| Tecla | Acción |
-|-------|--------|
-| `←` (Flecha Izquierda) | Mover nave a la izquierda |
-| `→` (Flecha Derecha) | Mover nave a la derecha |
-| `ESPACIO` | Disparar proyectil |
-| `ESC` | Salir del juego |
+| Key         | Action                          |
+|-------------|---------------------------------|
+| Left Arrow  | Move ship left                  |
+| Right Arrow | Move ship right                 |
+| Space       | Fire projectile                 |
+| P           | Pause / Resume                  |
+| Escape      | Quit game                       |
+| Enter       | Confirm / Continue (Game Over)  |
 
 ---
 
-## ⚙️ Configuración del Juego
+## Game Mechanics
 
-Puedes modificar parámetros del juego editando `include/config.h`:
+- **Player Ship**: Controlled by arrow keys. Fires one projectile at a time.
+- **Aliens**: 55 invaders in a 11x5 grid. Movement pattern follows zigzag trajectory. Speed increases as aliens are eliminated.
+- **Mystery UFO**: Randomly appears across the top of the screen for bonus points (50-300).
+- **Bunkers**: Four destructible shields. Damage is persistent across waves.
+- **Levels**: Complete a wave to advance. Aliens start lower each level, and shooting/movement frequency increases.
+- **Scoring**: Top row = 30 points, middle = 20, bottom = 10. UFO = random bonus.
+- **Lives**: 3 starting lives. Game ends when all lives are lost or aliens reach the bottom.
+- **High Score Table**: Top 5 persistent scores with player initials (saved to `highscores.dat`).
+
+---
+
+## Game Configuration
+
+Edit `include/config.h` to customize gameplay. Key constants:
 
 ```c
-// Resolución de pantalla
+// Display
 #define DISPLAY_HEIGHT 600
-#define DISPLAY_WIDTH 600
+#define DISPLAY_WIDTH  600
 
-// Configuración de la nave
-#define SHIP_SPEED 6           // Velocidad de movimiento
-#define SHIP_BULLET_SPEED 15   // Velocidad de proyectiles
-#define SHIP_LIFE 3            // Vidas iniciales
+// Player ship
+#define SHIP_SPEED           6
+#define SHIP_BULLET_SPEED   15
+#define SHIP_LIFE            3
 
-// Configuración de marcianos
-#define MAX_ENEMIES 55         // Número de enemigos
-#define MART_SPEED 5           // Velocidad de enemigos
-#define MART_BULLET_SPEED 5    // Velocidad de disparos
+// Alien configuration
+#define MAX_ENEMIES         55
+#define NUM_ENEMY_X         11
+#define NUM_ENEMY_Y          5
+#define MART_BASE_SPEED      5
+#define MART_BULLET_SPEED    5
 
-// Modo Dios (invencibilidad)
-#define GOD_MODE 0             // 0 = desactivado, 1 = activado
+// Destructible bunkers
+#define NUM_BUNKERS          4
+#define BUNKER_PARTS         5
 
-// Puntuación por tipo de enemigo
-#define POINTS_01 30           // Fila superior
-#define POINTS_02 20           // Fila media
-#define POINTS_03 10           // Fila inferior
+// High scores
+#define MAX_TOP_SCORES       5
+
+// God mode (invincibility): 0 = off, 1 = on
+#define GOD_MODE             0
 ```
 
-Después de modificar `config.h`, **recompila** el proyecto.
+After changing `config.h`, rebuild the project.
 
 ---
 
-## 🐛 Solución de Problemas
+## Troubleshooting
 
-### Error: "Allegro not found" (macOS/Linux)
+### Allegro Not Found (macOS/Linux)
 
 ```bash
-# Verifica que pkg-config encuentra Allegro
 pkg-config --modversion allegro-5
-
-# Si no aparece, reinstala Allegro
-brew reinstall allegro  # macOS
-sudo apt reinstall liballegro5-dev  # Linux
+# If it fails:
+brew reinstall allegro    # macOS
+sudo apt install liballegro5-dev  # Linux
 ```
+
+### Undefined Reference to Audio Symbols
+
+Ensure `allegro_audio` and `allegro_acodec` are linked. Use the provided build scripts, which include all required libraries automatically.
 
 ### Error: "Cannot find -lallegro_monolith" (Windows)
 
-El Makefile busca la biblioteca en rutas específicas. Soluciones:
+The static MinGW build on Windows uses monoithic linking. Solutions:
 
-1. **Usa las DLLs incluidas**: Copia `allegro_monolith-5.2.dll` a la misma carpeta que el `.exe`
-2. **Ajusta las rutas en el Makefile** (líneas 8-16)
-3. **Instala Allegro con MSYS2**:
+1. Copy `allegro_monolith-5.2.dll` alongside the executable, or
+2. Use MSYS2 which provides proper pkg-config support.
+
+### Game Opens but Graphics Appear Incorrect
+
+The game must be launched from the project root directory, where the `resources/` folder is accessible:
+
 ```bash
-pacman -S mingw-w64-x86_64-allegro
-```
-
-### El juego se ejecuta pero no muestra gráficos o dice "Error initializing game"
-
-**Problema**: Las rutas de recursos no son correctas o el juego no se ejecuta desde el directorio correcto.
-
-**Solución**:
-
-1. **Ejecuta el juego SIEMPRE desde el directorio raíz del proyecto:**
-```bash
-# ✅ Correcto
 cd space-invaders-c
 ./SpaceInvaders
-
-# ❌ Incorrecto
-cd space-invaders-c/src
-../SpaceInvaders  # No encontrará los recursos
 ```
 
-2. **Verifica que las rutas en `config.h` sean correctas:**
-```c
-// ✅ Correcto (ejecutable en directorio raíz)
-#define BACKGROUND_IMG_RSC "resources/images/background.bmp"
+Verify resources are accessible:
 
-// ❌ Incorrecto
-#define BACKGROUND_IMG_RSC "../resources/images/background.bmp"
-```
-
-3. **Usa el script de verificación:**
 ```bash
-scripts/test_resources.sh
+./scripts/test_resources.sh
 ```
 
-Este script te dirá si todos los recursos son accesibles desde la ubicación actual.
-
-### Error de compilación: "undefined reference to..."
-
-Falta enlazar alguna biblioteca de Allegro. Asegúrate de incluir:
-
-- `allegro_monolith` (Windows) o todas las individuales (Unix):
-  - `allegro-5`
-  - `allegro_main-5`
-  - `allegro_image-5`
-  - `allegro_font-5`
-  - `allegro_ttf-5`
-  - `allegro_primitives-5`
-
-### En macOS: "permission denied" al ejecutar
+### "Permission Denied" on macOS
 
 ```bash
 chmod +x SpaceInvaders
 ./SpaceInvaders
 ```
 
+### macOS Retina Display
+
+On Retina displays, the game window will appear smaller due to macOS's display scaling. To increase window size, edit `DISPLAY_HEIGHT` and `DISPLAY_WIDTH` in `include/config.h` (e.g., 900 or 1200) and rebuild.
+
 ---
 
-## 📝 Desarrollo y Contribución
+## Development
 
-### Compilar en Modo Debug
+### Debug Build
 
 ```bash
-# macOS/Linux
-make -f Makefile.unix
-# Ya incluye -g para debug
-
-# Windows
-mingw32-make
-# Ya incluye -g en CFLAGS
+make -f Makefile.unix debug
 ```
 
-### Ejecutar con Valgrind (detección de memory leaks)
+### Memory Analysis
 
 ```bash
-valgrind --leak-check=full ./SpaceInvaders
+valgrind --leak-check=full --show-leak-kinds=all ./SpaceInvaders
 ```
 
-### Estructura de Commits
+### Commit Convention
 
-Al contribuir, sigue este formato:
-
-```
-tipo(alcance): descripción breve
-
-- Detalle 1
-- Detalle 2
-```
-
-Ejemplos:
-- `feat(ship): añadir escudo temporal`
-- `fix(collision): corregir detección con bordes`
-- `docs(readme): actualizar instrucciones de macOS`
-
-### Roadmap del Proyecto
-
-- [x] **Fase 1**: Mecánicas básicas (movimiento, disparos, colisiones)
-- [x] **Fase 2**: Sistema de puntuación y vidas
-- [ ] **Fase 3**: Menú principal y pantalla de Game Over
-- [ ] **Fase 4**: Niveles progresivos con dificultad creciente
-- [ ] **Fase 5**: Power-ups y mejoras de nave
-- [ ] **Fase 6**: Tabla de puntuaciones (high scores)
-
----
-
-## 📜 Licencia
-
-Este proyecto está bajo la licencia **MIT**. Consulta el archivo [LICENSE](LICENSE) para más información.
+Follow the Conventional Commits specification:
 
 ```
-MIT License
+type(scope): description
 
-Copyright (c) 2024 RGiskard7
-
-Se concede permiso para usar, copiar, modificar y distribuir este software
-con o sin fines comerciales, siempre que se incluya este aviso de copyright.
+- Detail 1
+- Detail 2
 ```
 
----
-
-## 🤝 Contribuciones
-
-¡Las contribuciones son bienvenidas! Para contribuir:
-
-1. Haz un **fork** del repositorio
-2. Crea una **rama** para tu feature (`git checkout -b feature/nueva-funcionalidad`)
-3. **Commit** tus cambios (`git commit -m 'feat: añadir nueva funcionalidad'`)
-4. **Push** a la rama (`git push origin feature/nueva-funcionalidad`)
-5. Abre un **Pull Request**
-
-### Áreas de Mejora
-
-- Mejorar sprites y animaciones
-- Añadir más efectos de sonido
-- Implementar música de fondo
-- Sistema de puntuaciones persistente
-- Soporte para múltiples idiomas
-- Soporte para gamepad/joystick
+Examples:
+- `feat(ship): add temporary shield power-up`
+- `fix(collision): correct edge collision detection`
+- `docs(readme): update macOS installation instructions`
 
 ---
 
-## 📞 Contacto
+## License
 
-- **Autor**: RGiskard7
-- **GitHub**: [@RGiskard7](https://github.com/RGiskard7)
-- **Repositorio**: [space-invaders-c](https://github.com/RGiskard7/space-invaders-c)
-- **Issues**: [Reportar un bug](https://github.com/RGiskard7/space-invaders-c/issues)
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
 
-## 📚 Referencias y Recursos
+## Author
 
-- **Allegro 5 Documentation**: https://liballeg.org/a5docs/trunk/
-- **Space Invaders Original**: https://en.wikipedia.org/wiki/Space_Invaders
-- **C Programming**: https://www.learn-c.org/
-- **Game Development Patterns**: https://gameprogrammingpatterns.com/
+**Edu Diaz (RGiskard7)**
 
----
-
-## 🙏 Agradecimientos
-
-- Comunidad de **Allegro 5** por la excelente biblioteca
-- Taito Corporation por el juego original **Space Invaders** (1978)
-- Todos los contribuidores y testers del proyecto
-
----
-
-<div align="center">
-
-**¿Te gustó el proyecto? ¡Dale una ⭐ en GitHub!**
-
-[🐛 Reportar Bug](https://github.com/RGiskard7/space-invaders-c/issues) ·
-[💡 Sugerir Feature](https://github.com/RGiskard7/space-invaders-c/issues) ·
-[📖 Ver Documentación](https://github.com/RGiskard7/space-invaders-c/wiki)
-
-</div>
-
------
-
-<p align="center">
-  <small>Desarrollado por <b>Edu Díaz</b> (<b>RGiskard7</b>) ❤️</small>
-</p>
+- GitHub: [@RGiskard7](https://github.com/RGiskard7)
+- Repository: [space-invaders-c](https://github.com/RGiskard7/space-invaders-c)
+- Bugs & Feature Requests: [GitHub Issues](https://github.com/RGiskard7/space-invaders-c/issues)
