@@ -136,7 +136,7 @@ float ship_get_x(SHIP *ship) {
   if (ship != NULL) {
     return ship->x;
   }
-  return -1.0;
+  return 0.0f;
 }
 
 /**
@@ -164,7 +164,7 @@ float ship_get_y(SHIP *ship) {
   if (ship != NULL) {
     return ship->y;
   }
-  return -1.0;
+  return 0.0f;
 }
 
 /**

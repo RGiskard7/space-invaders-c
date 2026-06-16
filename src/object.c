@@ -117,7 +117,7 @@ STATUS obj_set_x(OBJECT *object, float cx) {
  */
 float obj_get_x(OBJECT *object) {
     if (!object) {
-        return ERROR;
+        return 0.0f;
     }
 
     return object->x;
@@ -148,7 +148,7 @@ STATUS obj_set_y(OBJECT *object, float cy) {
  */
 float obj_get_y(OBJECT *object) {
     if (!object) {
-        return ERROR;
+        return 0.0f;
     }
 
     return object->y;

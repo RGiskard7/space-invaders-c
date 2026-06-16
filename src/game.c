@@ -237,6 +237,11 @@ STATUS game_destroy(GAME *game) {
     return ERROR;
   }
 
+  if (game->ufo) {
+    obj_destroy(game->ufo);
+    game->ufo = NULL;
+  }
+
   for (int i = 0; i < game->num_objects; i++) {
     obj_destroy(game->objects[i]);
     game->objects[i] = NULL;
@@ -335,8 +340,7 @@ STATUS game_destroy(GAME *game) {
     game->timer = NULL;
   }
 
-  free(game); // eliminacion de la estructura GAME
-  game = NULL;
+  free(game);
 
   return OK;
 }
@@ -1098,7 +1102,7 @@ BULLET *game_get_orphan_bullet_at(GAME *game, int i) {
  * @return OK if successful, ERROR if game is NULL.
  */
 STATUS game_move_orphan_bullets(GAME *game, float speed) {
-  int bottom_limit = CANVAS_HEIGTH;
+  int bottom_limit = CANVAS_HEIGHT;
 
   if (!game) {
     return ERROR;
@@ -1195,18 +1199,6 @@ OBJECT *game_get_object_at(GAME *game, int i) {
   return game->objects[i];
 }
 
-// =========================================================================
-// Functions: Input Callbacks - Ship Movement and Shooting
-// =========================================================================
-
-/**
- * @brief Moves the player's ship to the left.
- *
- * Checks if the ship can move left within bounds and updates its direction.
- *
- * @param game Pointer to the GAME instance.
- * @return OK if movement is successful, ERROR if game is NULL.
- */
 STATUS callback_left(GAME *game) {
   if (!game)
     return ERROR;
@@ -1376,7 +1368,7 @@ STATUS game_colisions(GAME *game) {
   if (!game)
     return ERROR;
 
-  // 1. Balas del jugador
+  // Frecuencia dinámica: aumenta con menos enemigos vivos y con el nivel
   for (int i = ship_get_num_shots(game->ship) - 1; i >= 0; i--) {
     BULLET *sb = ship_get_bullet_at(game->ship, i);
     bool destroyed = false;
@@ -1385,7 +1377,7 @@ STATUS game_colisions(GAME *game) {
     for (int j = 0; j < game->num_enemies_alive; j++) {
       MARTIAN *m = game->enemy[j];
 
-      if (bullet_check_colision(sb, mart_get_x(m), mart_get_y(m), MART_WIDTH, MART_HEIGHT)) {
+      if (bullet_check_collision(sb, mart_get_x(m), mart_get_y(m), MART_WIDTH, MART_HEIGHT)) {
 
         al_play_sample(game->samples[1], 1.0, 0.0, 1.0, ALLEGRO_PLAYMODE_ONCE, NULL);
 
@@ -1420,7 +1412,7 @@ STATUS game_colisions(GAME *game) {
       for (int k = mart_get_num_shots(m) - 1; k >= 0; k--) {
         BULLET *mb = mart_get_bullet_at(m, k);
 
-        if (bullet_check_colision(sb, bullet_get_x(mb), bullet_get_y(mb),
+        if (bullet_check_collision(sb, bullet_get_x(mb), bullet_get_y(mb),
                                   bullet_get_width(mb),
                                   bullet_get_height(mb))) {
 
@@ -1450,7 +1442,7 @@ STATUS game_colisions(GAME *game) {
     for (int j = game->num_orphan_bullets - 1; j >= 0; j--) {
       BULLET *ob = game->orphan_bullets[j];
 
-      if (bullet_check_colision(sb, bullet_get_x(ob), bullet_get_y(ob),
+      if (bullet_check_collision(sb, bullet_get_x(ob), bullet_get_y(ob),
                                 bullet_get_width(ob), bullet_get_height(ob))) {
 
         OBJECT *exp = obj_create(game->martian_explosion_img, 0, 0,
@@ -1472,7 +1464,7 @@ STATUS game_colisions(GAME *game) {
       continue;
 
     // Contra UFO
-    if (game->ufo && bullet_check_colision(sb, obj_get_x(game->ufo), obj_get_y(game->ufo),
+    if (game->ufo && bullet_check_collision(sb, obj_get_x(game->ufo), obj_get_y(game->ufo),
               UFO_WIDTH, UFO_HEIGHT)) {
 
       game->total_score += UFO_POINTS_MIN + (rand() % (UFO_POINTS_MAX - UFO_POINTS_MIN));
@@ -1501,7 +1493,7 @@ STATUS game_colisions(GAME *game) {
       if (!game->bunkers[j])
         continue;
 
-      if (bullet_check_colision(sb, bunker_get_x(game->bunkers[j]),
+      if (bullet_check_collision(sb, bunker_get_x(game->bunkers[j]),
                                 bunker_get_y(game->bunkers[j]), BUNKER_PART_WIDTH,
                                 BUNKER_PART_HEIGHT)) {
 
@@ -1529,7 +1521,7 @@ STATUS game_colisions(GAME *game) {
       BULLET *mb = mart_get_bullet_at(m, k);
 
       if (GOD_MODE == 0 && !game->ship_exploding && 
-          bullet_check_colision(mb, ship_get_x(game->ship), 
+          bullet_check_collision(mb, ship_get_x(game->ship), 
           ship_get_y(game->ship), ship_get_width(game->ship), 
           ship_get_height(game->ship))) {
        
@@ -1547,7 +1539,7 @@ STATUS game_colisions(GAME *game) {
         if (!game->bunkers[l])
           continue;
 
-        if (bullet_check_colision(mb, bunker_get_x(game->bunkers[l]),
+        if (bullet_check_collision(mb, bunker_get_x(game->bunkers[l]),
                                   bunker_get_y(game->bunkers[l]),
                                   BUNKER_PART_WIDTH, BUNKER_PART_HEIGHT)) {
 
@@ -1571,7 +1563,7 @@ STATUS game_colisions(GAME *game) {
     BULLET *ob = game->orphan_bullets[i];
 
     if (GOD_MODE == 0 && !game->ship_exploding && 
-        bullet_check_colision(ob, ship_get_x(game->ship), 
+        bullet_check_collision(ob, ship_get_x(game->ship), 
         ship_get_y(game->ship), ship_get_width(game->ship), 
         ship_get_height(game->ship))) {
 
@@ -1589,7 +1581,7 @@ STATUS game_colisions(GAME *game) {
       if (!game->bunkers[l])
         continue;
 
-      if (bullet_check_colision(ob, bunker_get_x(game->bunkers[l]),
+      if (bullet_check_collision(ob, bunker_get_x(game->bunkers[l]),
                                 bunker_get_y(game->bunkers[l]), BUNKER_PART_WIDTH,
                                 BUNKER_PART_HEIGHT)) {
 
@@ -2103,8 +2095,8 @@ STATUS game_print_floor(GAME *game) {
   }
 
   // pintar linea verde suelo
-  al_draw_line(FRAME_WIDTH + 10, CANVAS_HEIGTH, CANVAS_WIDTH - 15,
-               CANVAS_HEIGTH, green_color, 2.0);
+  al_draw_line(FRAME_WIDTH + 10, CANVAS_HEIGHT, CANVAS_WIDTH - 15,
+               CANVAS_HEIGHT, green_color, 2.0);
 
   return OK;
 }

@@ -51,7 +51,7 @@
 #define FRAME_WIDTH 40     ///< Width of the display frame (side borders)
 #define FRAME_WIDTH_SUP 60 ///< Width of the upper display frame
 
-#define CANVAS_HEIGTH                                                          \
+#define CANVAS_HEIGHT                                                          \
   DISPLAY_HEIGHT - FRAME_WIDTH_SUP ///< Height of the playable canvas area
 #define CANVAS_WIDTH                                                           \
   DISPLAY_WIDTH - FRAME_WIDTH ///< Width of the playable canvas area

@@ -145,7 +145,7 @@ STATUS mart_set_x(MARTIAN *martian, float cx) {
  */
 float mart_get_x(MARTIAN *martian) {
   if (!martian) {
-    return ERROR;
+    return 0.0f;
   }
 
   return martian->x;
@@ -176,7 +176,7 @@ STATUS mart_set_y(MARTIAN *martian, float cy) {
  */
 float mart_get_y(MARTIAN *martian) {
   if (!martian) {
-    return ERROR;
+    return 0.0f;
   }
 
   return martian->y;
@@ -547,7 +547,7 @@ BULLET *mart_get_bullet_at(MARTIAN *martian, int i) {
  * @return STATUS code (OK on success, ERROR on failure).
  */
 STATUS mart_move_bullet(MARTIAN *martian, float speed) { // Pasar los limites por parametro para que la funcion sea mas reutilizable
-  float bottom_limit = CANVAS_HEIGTH;
+  float bottom_limit = CANVAS_HEIGHT;
 
   if (!martian) {
     return ERROR;

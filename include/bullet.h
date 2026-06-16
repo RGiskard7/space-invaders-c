@@ -106,6 +106,6 @@ STATUS bullet_move(BULLET *bullet, float speed);
 /**
  * @brief Checks for collision between the bullet and a specified object.
  */
-bool bullet_check_colision(BULLET *bullet, int obj_x, int obj_y, int obj_width, int obj_height);
+bool bullet_check_collision(BULLET *bullet, int obj_x, int obj_y, int obj_width, int obj_height);
 
 #endif /* BULLET_H */

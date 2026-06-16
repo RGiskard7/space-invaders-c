@@ -103,7 +103,7 @@ STATUS bullet_set_x(BULLET *bullet, float cx) {
  */
 float bullet_get_x(BULLET *bullet) {
     if (!bullet) {
-        return ERROR;
+        return 0.0f;
     }
 
     return bullet->x;
@@ -134,7 +134,7 @@ STATUS bullet_set_y(BULLET *bullet, float cy) {
  */
 float bullet_get_y(BULLET *bullet) {
     if (!bullet) {
-        return ERROR;
+        return 0.0f;
     }
 
     return bullet->y;
@@ -339,7 +339,7 @@ STATUS bullet_print(BULLET *bullet) {
  * @param obj_height Height of the object.
  * @return true if collision is detected, false otherwise.
  */
-bool bullet_check_colision(BULLET *bullet, int obj_x, int obj_y, int obj_width, int obj_height) {
+bool bullet_check_collision(BULLET *bullet, int obj_x, int obj_y, int obj_width, int obj_height) {
     if ((bullet->x < obj_x + obj_width) && 
         (bullet->x + bullet->width > obj_x) && 
         (bullet->y < obj_y + obj_height) && 
