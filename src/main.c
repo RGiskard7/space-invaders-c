@@ -102,7 +102,7 @@ bool init_allegro(Flags *flags);
  *
  * @return EXIT_SUCCESS on successful execution, EXIT_FAILURE otherwise.
  */
-int main(void) {
+int main() {
   GAME *game = NULL;          // Game instance
   ALLEGRO_KEYBOARD_STATE key; // Stores the state of pressed keys
   Flags flags = {false, false, false,

@@ -97,13 +97,6 @@
 
 // PERSISTENCE
 #define HIGHSCORE_FILE "highscore.dat" ///< File used for high score persistence
-#define TOP_SCORES_FILE "highscores.dat" ///< File used for top scores persistence
-#define MAX_TOP_SCORES 5 ///< Maximum number of high scores to display
-#define MAX_NAME_LENGTH 3 ///< Maximum length of player name
-typedef struct {
-  char name[MAX_NAME_LENGTH + 1];
-  int score;
-} TOP_ENTRY;
 
 // BULLETS CONFIGURATION
 #define MAX_ORP_BULLETS                                                        \
@@ -136,5 +129,14 @@ typedef struct {
 #define BUNKER_PART_HEIGHT 16
 #define BUNKER_INIT_POS_Y DISPLAY_HEIGHT - 160
 #define BUNKER_LIFE 3 ///< 3 states (frames), 1 hit per state
+
+// TOP SCORE TABLE
+#define TOP_SCORES_FILE "highscores.dat"
+#define MAX_TOP_SCORES 5
+
+typedef struct {
+  char name[4];
+  int score;
+} TOP_ENTRY;
 
 #endif /* CONFIG_H */

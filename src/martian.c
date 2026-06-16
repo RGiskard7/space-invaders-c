@@ -115,6 +115,7 @@ STATUS mart_destroy(MARTIAN *martian) {
   }
 
   free(martian);
+  martian = NULL;
 
   return result;
 }
@@ -268,7 +269,7 @@ STATUS mart_set_active(MARTIAN *martian, bool active) {
  */
 bool mart_get_active(MARTIAN *martian) {
   if (!martian) {
-    return false;
+    return ERROR;
   }
 
   return martian->active;

@@ -23,7 +23,7 @@ typedef struct _game GAME;
 /**
  * @brief Creates a new game instance.
  */
-GAME *game_create(void);
+GAME *game_create();
 
 /**
  * @brief Initializes the game with specified FPS.
