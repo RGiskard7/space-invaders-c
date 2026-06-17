@@ -190,7 +190,7 @@ STATUS mart_print(MARTIAN *martian);
  * 
  * Controls the timing of the martian's animations.
  */
-void mart_set_timer(MARTIAN *martian, int max_time);
+void mart_tick_timer(MARTIAN *martian, int max_time);
 
 /**
  * @brief Retrieves the current animation timer value.

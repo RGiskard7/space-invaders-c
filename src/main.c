@@ -113,7 +113,7 @@ int main() {
     return EXIT_FAILURE;
   }
 
-  game = game_create(); // Creacion del juego
+  game = game_create();
   if (!game) {
     clean_up(&flags, NULL);
     fprintf(stderr, "Error creating game instance.\n");
@@ -229,13 +229,13 @@ bool init_allegro(Flags *flags) {
  * @param game Pointer to the GAME instance.
  */
 void register_event_sources(GAME *game) {
-  // Registrar en la pila todos los eventos de tiempo
+  // Register timer events
   al_register_event_source(game_get_ev_queue(game),
       al_get_timer_event_source(game_get_timer(game))); 
-  // Registrar en la pila todos los eventos de pantalla
+  // Register display events
   al_register_event_source(game_get_ev_queue(game),
       al_get_display_event_source(game_get_screen(game))); 
-  // Registrar en la pila todos los eventos del teclado
+  // Register keyboard events
   al_register_event_source(game_get_ev_queue(game),
       al_get_keyboard_event_source()); 
 
@@ -255,7 +255,7 @@ void windows_configuration(GAME *game) {
   int monitor_width, monitor_height;
   int window_pos_x, window_pos_y;
 
-  // Obtener las dimensiones del monitor principal
+  // Get primary monitor dimensions
   al_get_monitor_info(0, &monitor_info); 
 
   monitor_width = monitor_info.x2 - monitor_info.x1;
@@ -264,7 +264,7 @@ void windows_configuration(GAME *game) {
   window_pos_x = (monitor_width - DISPLAY_WIDTH) / 2;
   window_pos_y = (monitor_height - DISPLAY_HEIGHT) / 2;
 
-  // Posicionar la pantalla creada en el centro del monitor
+  // Center window on monitor
   al_set_window_position(game_get_screen(game), window_pos_x, window_pos_y); 
   al_set_window_title(game_get_screen(game), "Space Invaders");
 

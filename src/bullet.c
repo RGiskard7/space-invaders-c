@@ -50,7 +50,7 @@ BULLET *bullet_create(ALLEGRO_BITMAP *bitmap, int width, int height, float x, fl
     new_bullet->x = x; //coordenadas de la bullet
     new_bullet->y = y;
 
-    new_bullet->dir = dir; //dirrección de la bullet
+    new_bullet->dir = dir;
 
     new_bullet->source_x = 0;
     new_bullet->source_y = 0;

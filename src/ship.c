@@ -469,9 +469,9 @@ BULLET *ship_dequeue_bullet(SHIP *ship) {
  * @param i Index of bullet to remove.
  * @return Pointer to the removed bullet or NULL if index is invalid.
  */
- // Las balas se comportan como una lista dinamica, se pueden eliminar 
- // en cualquier orden, pero se deben desplazar las balas restantes 
- // para mantener la continuidad de la lista
+ // Bullets behave as a dynamic list: they can be removed
+ // in any order, but remaining bullets must be shifted
+ // to maintain list continuity
 BULLET *ship_extract_bullet_at(SHIP *ship, int i) {
   BULLET *bullet = NULL;
 
@@ -480,12 +480,12 @@ BULLET *ship_extract_bullet_at(SHIP *ship, int i) {
       if (ship->bullets[i] != NULL) {
         bullet = ship->bullets[i];
 
-        // Desplazamos todas las balas restantes hacia adelante
+        // Shift all remaining bullets forward
         for (int j = i; j < ship->num_shots - 1; j++) {
           ship->bullets[j] = ship->bullets[j + 1];
         }
 
-        // Reducimos el contador de balas y aseguramos que el último espacio sea NULL
+        // Decrease bullet count and ensure last slot is NULL
         ship->num_shots--;
         ship->bullets[ship->num_shots] = NULL;
       }
@@ -560,7 +560,7 @@ STATUS ship_shoot(SHIP *ship, ALLEGRO_BITMAP *bitmap) {
   }
 
   // La bullet se situa a 12 por encima
-  new_bullet = bullet_create(bitmap, 6, 12, ship->x + 12, ship->y, UP);
+  new_bullet = bullet_create(bitmap, BULLET_WIDTH, BULLET_HEIGHT, ship->x + 12, ship->y, UP);
   if (new_bullet == NULL) {
     return ERROR;
   }

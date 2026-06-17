@@ -21,7 +21,8 @@
 #define MART_BULLET_IMG_RSC "resources/images/martian_bullet.bmp"
 #define EXPLOSION_IMG_RSC "resources/images/martian_explosion.bmp"
 #define BUNKER_IMG_RSC "resources/images/escudos.bmp"
-#define UFO_IMG_RSC "resources/images/ovni.png"
+#define UFO_IMG_RSC "resources/images/ovni.png"  // fallback, not used when UFO_EMBEDDED is 1
+#define UFO_EMBEDDED 1    ///< Use hardcoded pixel sprite instead of loading PNG
 #define FONT_RSC "resources/fonts/space_invaders.ttf"
 
 // Sound Resources
@@ -41,9 +42,9 @@
 #define POINTS_03 10 ///< Points awarded for hitting the third type of martian
 
 // Display Configuration
-// IMPORTANTE: El juego está diseñado para 600x600. Otros tamaños se ven mal.
-// En macOS Retina se verá pequeño, pero es la única forma correcta sin
-// modificar código.
+// IMPORTANT: The game is designed for 600x600. Other sizes will look wrong.
+// On macOS Retina it will appear small, but this is the only correct way
+// without modifying code.
 #define DISPLAY_HEIGHT 600 ///< Height of the game display window
 #define DISPLAY_WIDTH 600  ///< Width of the game display window
 
@@ -55,6 +56,7 @@
   DISPLAY_HEIGHT - FRAME_WIDTH_SUP ///< Height of the playable canvas area
 #define CANVAS_WIDTH                                                           \
   DISPLAY_WIDTH - FRAME_WIDTH ///< Width of the playable canvas area
+#define RIGHT_MARGIN 32 ///< Right boundary offset for ship and enemy movement
 
 // Gameplay Modes
 #define GOD_MODE 0 ///< Toggle for invincibility mode (0 = off, 1 = on)
@@ -82,23 +84,25 @@
 #define MART_INIT_POS_X                                                        \
   130 // 500 ///< Initial X-coordinate for martians formation
 #define MART_INIT_POS_Y                                                        \
-  170 // 100 ///< Initial Y-coordinate for martians formation
+  195 ///< Initial Y-coordinate for martians formation
 
 #define MART_BASE_SPEED 5 ///< Initial speed of the martian's movement
 #define MART_MAX_SPEED 15 ///< Maximum speed when only one martian remains
 
 #define MART_BULLET_SPEED 5 ///< Speed of the martian's bullets
 
-#define MART_MOVE_TIMER 20           ///< Timer interval for martian movement
-#define MART_SHOOT_FREQ 75           ///< Frequency at which martians can shoot (frames)
-#define MART_SHOOT_FREQ_MIN 20       ///< Minimum shoot interval (hardest difficulty)
-#define MART_MOVE_TIMER_MIN 1        ///< Minimum move timer (1 frame = fastest possible)
+#define MART_MOVE_TIMER 40           ///< Timer interval for martian movement (base, at 55 enemies)
+#define MART_SHOOT_FREQ 90           ///< Frequency at which martians can shoot (frames, at 55 enemies)
+#define MART_SHOOT_FREQ_MIN 25       ///< Minimum shoot interval (hardest difficulty)
+#define MART_MOVE_TIMER_MIN 2        ///< Minimum move timer (2 frames = very fast)
 #define MART_ANIMATION_SPEED 25      ///< Speed of the martian animation cycle
 
 // PERSISTENCE
 #define HIGHSCORE_FILE "highscore.dat" ///< File used for high score persistence
 
 // BULLETS CONFIGURATION
+#define BULLET_WIDTH 6
+#define BULLET_HEIGHT 12
 #define MAX_ORP_BULLETS                                                        \
   20 ///< Maximum number of orphan bullets (bullets not associated with any ship
      ///< or martian)
@@ -117,10 +121,17 @@
 #define UFO_SPEED 4         ///< Speed of the UFO
 #define UFO_POINTS_MIN 50
 #define UFO_POINTS_MAX 300
-#define UFO_SPAWN_CHANCE 500 ///< 1 in 500 chance per frame to spawn UFO
-#define UFO_WIDTH 48
-#define UFO_HEIGHT 21
-#define UFO_INIT_POS_Y 143  ///< Y-coordinate where the UFO flies
+#define UFO_SPAWN_CHANCE 500 ///< 1 in 500 chance per frame to spawn UFO (used if UFO_TIMER is 0)
+#define UFO_TIMER 1          ///< 1 = timer-based spawn (arcade), 0 = random-based
+#define UFO_SPAWN_DELAY 750   ///< Frames between UFO spawns (~25s at 30FPS)
+#define UFO_WIDTH 32        ///< Display width (2x sprite scale)
+#define UFO_HEIGHT 14       ///< Display height (2x sprite scale)
+#define UFO_INIT_POS_Y 168  ///< Y-coordinate where the UFO flies (above enemies)
+#define UFO_SPRITE_W 16     ///< Source sprite width in pixels
+#define UFO_SPRITE_H 7      ///< Source sprite height in pixels
+
+// EXTRA LIFE
+#define EXTRA_LIFE_SCORE 1500 ///< Score threshold for awarding an extra ship
 
 // BUNKERS CONFIGURATION
 #define NUM_BUNKERS 4

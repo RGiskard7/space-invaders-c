@@ -83,7 +83,7 @@ MARTIAN *mart_create(ALLEGRO_BITMAP *bitmap, int width, int height, float x,
 
   new_martian->active = false;
 
-  // Inicializacion de punteros a balas a NULL
+  // Initialize bullet pointers to NULL
   for (int i = 0; i < MAX_MART_BULLETS; i++) {
     new_martian->bullets[i] = NULL;
   }
@@ -106,7 +106,7 @@ STATUS mart_destroy(MARTIAN *martian) {
     return ERROR;
   }
 
-  // Recorrer hasta el maximo de balas disparadas por el marciano y destruir cada una
+  // Traverse up to max bullets fired by martian and destroy each one
   for (int i = 0; i < martian->num_shots && martian->bullets[i] != NULL; i++) { 
     if (bullet_destroy(martian->bullets[i]) == ERROR) {
       result = ERROR;
@@ -471,7 +471,7 @@ STATUS mart_add_bullet(MARTIAN *martian, BULLET *bullet) {
  * @param martian Pointer to the Martian.
  * @return Pointer to the dequeued bullet, or NULL if none available.
  */
- // Las balas se comportan como una cola, se eliminan en el orden en que fueron disparadas
+ // Bullets behave as a queue, removed in order they were fired
 BULLET *mart_dequeue_bullet(MARTIAN *martian) {
   BULLET *bullet = NULL;
 
@@ -497,9 +497,9 @@ BULLET *mart_dequeue_bullet(MARTIAN *martian) {
  * @param i Index of the bullet to extract.
  * @return Pointer to the extracted bullet, or NULL if not found.
  */
- // Las balas se comportan como una lista dinamica, se pueden eliminar 
- // en cualquier orden, pero se deben desplazar las balas restantes 
- // para mantener la continuidad de la lista
+ // Bullets behave as a dynamic list: they can be removed
+ // in any order, but remaining bullets must be shifted
+ // to maintain list continuity
 BULLET *mart_extract_bullet_at(MARTIAN *martian, int i) { 
   BULLET *bullet = NULL;
 
@@ -508,13 +508,12 @@ BULLET *mart_extract_bullet_at(MARTIAN *martian, int i) {
       if (martian->bullets[i] != NULL) {
         bullet = martian->bullets[i];
 
-        // Desplazamos todas las balas restantes hacia adelante
+        // Shift remaining bullets forward
         for (int j = i; j < martian->num_shots - 1; j++) {
           martian->bullets[j] = martian->bullets[j + 1];
         }
 
-        // Reducimos el contador de balas y aseguramos que el último espacio sea
-        // NULL
+        // Decrease bullet count and ensure last slot is NULL
         martian->num_shots--;
         martian->bullets[martian->num_shots] = NULL;
       }
@@ -586,7 +585,7 @@ STATUS mart_shoot(MARTIAN *martian, ALLEGRO_BITMAP *bitmap) {
     return OK;
   }
 
-  new_bullet = bullet_create(bitmap, 6, 12, martian->x + 12, martian->y, DOWN);
+  new_bullet = bullet_create(bitmap, BULLET_WIDTH, BULLET_HEIGHT, martian->x + 12, martian->y, DOWN);
 
   if (!new_bullet) {
     return ERROR;
@@ -648,12 +647,12 @@ STATUS mart_print(MARTIAN *martian) {
  * @param martian Pointer to the Martian.
  * @param max_time Maximum timer value before resetting.
  */
-void mart_set_timer(MARTIAN *martian, int max_time) {
+void mart_tick_timer(MARTIAN *martian, int max_time) {
   if (!martian) {
     return;
   }
 
-  // temporizador para las balas
+  // Timer for bullets
   martian->timer++;
   if (martian->timer >= max_time) {
     martian->timer = 0;
