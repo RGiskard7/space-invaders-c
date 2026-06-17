@@ -20,7 +20,6 @@ struct _bullet {
     ALLEGRO_BITMAP *bitmap;           ///< Bitmap representing the bullet image
     int source_x, source_y;           ///< Source coordinates in the bitmap
     int width, height;                ///< Dimensions of the bullet
-    int dx, dy;                       ///< Movement increments for speed adjustments
 };
 
 /**
@@ -51,16 +50,13 @@ BULLET *bullet_create(ALLEGRO_BITMAP *bitmap, int width, int height, float x, fl
     new_bullet->x = x; //coordenadas de la bullet
     new_bullet->y = y;
 
-    new_bullet->dir = dir; //dirrección de la bullet
+    new_bullet->dir = dir;
 
     new_bullet->source_x = 0;
     new_bullet->source_y = 0;
 
     new_bullet->width = width;
     new_bullet->height = height;
-
-    new_bullet->dx = 0; //incremento de las coordenadas para la velocidad de la bullet
-    new_bullet->dy = 0;
 
     return new_bullet;
 }
@@ -107,7 +103,7 @@ STATUS bullet_set_x(BULLET *bullet, float cx) {
  */
 float bullet_get_x(BULLET *bullet) {
     if (!bullet) {
-        return ERROR;
+        return 0.0f;
     }
 
     return bullet->x;
@@ -138,7 +134,7 @@ STATUS bullet_set_y(BULLET *bullet, float cy) {
  */
 float bullet_get_y(BULLET *bullet) {
     if (!bullet) {
-        return ERROR;
+        return 0.0f;
     }
 
     return bullet->y;
@@ -243,12 +239,12 @@ int bullet_get_source_x(BULLET *bullet) {
  * @param source_y Source y-coordinate.
  * @return STATUS code (OK on success, ERROR if bullet is NULL).
  */
-STATUS bullet_set_source_y(BULLET *bullet, int source_x) {
+STATUS bullet_set_source_y(BULLET *bullet, int source_y) {
     if (!bullet) {
         return ERROR;
     }
 
-    bullet->source_x = source_x;
+    bullet->source_y = source_y;
 
     return OK;
 }
@@ -264,69 +260,7 @@ int bullet_get_source_y(BULLET *bullet) {
         return ERROR;
     }
 
-    return bullet->source_x;
-}
-
-/**
- * @brief Sets the x-coordinate increment (dx) for movement.
- * 
- * @param bullet Pointer to the bullet.
- * @param dx X increment.
- * @return STATUS code (OK on success, ERROR if bullet is NULL).
- */
-STATUS bullet_set_dx(BULLET *bullet, int dx) {
-    if (!bullet) {
-        return ERROR;
-    }
-
-    bullet->dx = dx;
-
-    return OK;
-}
-
-/**
- * @brief Retrieves the x-coordinate increment (dx) for movement.
- * 
- * @param bullet Pointer to the bullet.
- * @return dx value, or 0 if bullet is NULL.
- */
-int bullet_get_dx(BULLET *bullet) {
-    if (!bullet) {
-        return 0;
-    }
-
-    return bullet->dx;
-}
-
-/**
- * @brief Sets the y-coordinate increment (dy) for movement.
- * 
- * @param bullet Pointer to the bullet.
- * @param dy Y increment.
- * @return STATUS code (OK on success, ERROR if bullet is NULL).
- */
-STATUS bullet_set_dy(BULLET *bullet, int dy) {
-    if (!bullet) {
-        return ERROR;
-    }
-
-    bullet->dy = dy;
-
-    return OK;
-}
-
-/**
- * @brief Retrieves the y-coordinate increment (dy) for movement.
- * 
- * @param bullet Pointer to the bullet.
- * @return dy value, or 0 if bullet is NULL.
- */
-int bullet_get_dy(BULLET *bullet) {
-    if (!bullet) {
-        return 0;
-    }
-
-    return bullet->dy;
+    return bullet->source_y;
 }
 
 /**
@@ -405,7 +339,7 @@ STATUS bullet_print(BULLET *bullet) {
  * @param obj_height Height of the object.
  * @return true if collision is detected, false otherwise.
  */
-bool bullet_check_colision(BULLET *bullet, int obj_x, int obj_y, int obj_width, int obj_height) {
+bool bullet_check_collision(BULLET *bullet, int obj_x, int obj_y, int obj_width, int obj_height) {
     if ((bullet->x < obj_x + obj_width) && 
         (bullet->x + bullet->width > obj_x) && 
         (bullet->y < obj_y + obj_height) && 

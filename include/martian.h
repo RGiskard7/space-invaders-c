@@ -120,7 +120,7 @@ long mart_get_num_shots(MARTIAN *martian);
 /**
  * @brief Sets the score associated with the martian.
  */
-STATUS mart_set_Score(MARTIAN *martian, int score);
+STATUS mart_set_score(MARTIAN *martian, int score);
 
 /**
  * @brief Retrieves the score value of the martian.
@@ -190,7 +190,7 @@ STATUS mart_print(MARTIAN *martian);
  * 
  * Controls the timing of the martian's animations.
  */
-void mart_set_timer(MARTIAN *martian, int max_time);
+void mart_tick_timer(MARTIAN *martian, int max_time);
 
 /**
  * @brief Retrieves the current animation timer value.

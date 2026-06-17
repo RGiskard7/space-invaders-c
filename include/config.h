@@ -1,6 +1,7 @@
 /**
  * @file config.h
- * @brief Configuration file for defining constants and resources in the Space Invaders game.
+ * @brief Configuration file for defining constants and resources in the Space
+ * Invaders game.
  *
  * This file contains the necessary paths to resources and constants
  * such as screen dimensions, game object properties, and gameplay parameters.
@@ -19,7 +20,21 @@
 #define SHIP_BULLET_IMG_RSC "resources/images/ship_bullet.bmp"
 #define MART_BULLET_IMG_RSC "resources/images/martian_bullet.bmp"
 #define EXPLOSION_IMG_RSC "resources/images/martian_explosion.bmp"
-#define FONT_RSC  "resources/fonts/space_invaders.ttf"
+#define BUNKER_IMG_RSC "resources/images/escudos.bmp"
+#define UFO_IMG_RSC "resources/images/ovni.png"  // fallback, not used when UFO_EMBEDDED is 1
+#define UFO_EMBEDDED 1    ///< Use hardcoded pixel sprite instead of loading PNG
+#define FONT_RSC "resources/fonts/space_invaders.ttf"
+
+// Sound Resources
+#define SND_SHOOT "resources/sounds/shoot.wav"
+#define SND_INVADER_KILLED "resources/sounds/invaderkilled.wav"
+#define SND_SHIP_EXPLOSION "resources/sounds/shipexplosion.wav"
+#define SND_MYSTERY_ENTERED "resources/sounds/mysteryentered.wav"
+#define SND_MYSTERY_KILLED "resources/sounds/mysterykilled.wav"
+#define SND_MOVE_0 "resources/sounds/0.wav"
+#define SND_MOVE_1 "resources/sounds/1.wav"
+#define SND_MOVE_2 "resources/sounds/2.wav"
+#define SND_MOVE_3 "resources/sounds/3.wav"
 
 // Points Configuration for Different Martian Types
 #define POINTS_01 30 ///< Points awarded for hitting the first type of martian
@@ -27,59 +42,112 @@
 #define POINTS_03 10 ///< Points awarded for hitting the third type of martian
 
 // Display Configuration
-// IMPORTANTE: El juego está diseñado para 600x600. Otros tamaños se ven mal.
-// En macOS Retina se verá pequeño, pero es la única forma correcta sin modificar código.
+// IMPORTANT: The game is designed for 600x600. Other sizes will look wrong.
+// On macOS Retina it will appear small, but this is the only correct way
+// without modifying code.
 #define DISPLAY_HEIGHT 600 ///< Height of the game display window
-#define DISPLAY_WIDTH 600 ///< Width of the game display window
+#define DISPLAY_WIDTH 600  ///< Width of the game display window
 
 // Frame and Canvas Dimensions
-#define FRAME_WIDTH 40 ///< Width of the display frame (side borders)
+#define FRAME_WIDTH 40     ///< Width of the display frame (side borders)
 #define FRAME_WIDTH_SUP 60 ///< Width of the upper display frame
 
-#define CANVAS_HEIGTH DISPLAY_HEIGHT - FRAME_WIDTH_SUP ///< Height of the playable canvas area
-#define CANVAS_WIDTH DISPLAY_WIDTH - FRAME_WIDTH ///< Width of the playable canvas area
+#define CANVAS_HEIGHT                                                          \
+  DISPLAY_HEIGHT - FRAME_WIDTH_SUP ///< Height of the playable canvas area
+#define CANVAS_WIDTH                                                           \
+  DISPLAY_WIDTH - FRAME_WIDTH ///< Width of the playable canvas area
+#define RIGHT_MARGIN 32 ///< Right boundary offset for ship and enemy movement
 
 // Gameplay Modes
-#define GOD_MODE 0  ///< Toggle for invincibility mode (0 = off, 1 = on)
+#define GOD_MODE 0 ///< Toggle for invincibility mode (0 = off, 1 = on)
 
 // SHIP CONFIGURATION
 #define SHIP_INIT_POS_X DISPLAY_WIDTH / 2 ///< Initial X-coordinate for the ship
-#define SHIP_INIT_POS_Y DISPLAY_HEIGHT - 90 ///< Initial Y-coordinate for the ship
+#define SHIP_INIT_POS_Y                                                        \
+  DISPLAY_HEIGHT - 90 ///< Initial Y-coordinate for the ship
 
-#define SHIP_SPEED 6 ///< Ship movement speed
+#define SHIP_SPEED 6         ///< Ship movement speed
 #define SHIP_BULLET_SPEED 15 ///< Speed of the ship's bullets
 
-#define SHIP_TIMER 3 ///< Timer interval for ship's shooting cooldown
-
-#define SHIP_LIFE 3 ///< Initial lives for the ship
+#define SHIP_LIFE 3                ///< Initial lives for the ship
+#define SHIP_BULLET_TOP_LIMIT 160  ///< Y limit above which ship bullets are removed
+#define SHIP_EXPLOSION_FRAMES 60   ///< Duration of ship explosion animation in frames
 
 // MARTIANS CONFIGURATION
 #define MAX_ENEMIES 55 ///< Maximum number of enemies
 #define NUM_ENEMY_X 11 ///< Number of martians per row
-#define NUM_ENEMY_Y 5 ///< Number of martians per column
+#define NUM_ENEMY_Y 5  ///< Number of martians per column
 
 #define SPACE_BTW_MARTIANS_X 32 ///< Horizontal space between martians
 #define SPACE_BTW_MARTIANS_Y 27 ///< Vertical space between martians
 
-#define MART_INIT_POS_X 130 //500 ///< Initial X-coordinate for martians formation
-#define MART_INIT_POS_Y 170 //100 ///< Initial Y-coordinate for martians formation
+#define MART_INIT_POS_X                                                        \
+  130 // 500 ///< Initial X-coordinate for martians formation
+#define MART_INIT_POS_Y                                                        \
+  195 ///< Initial Y-coordinate for martians formation
 
+#define MART_BASE_SPEED 5 ///< Initial speed of the martian's movement
+#define MART_MAX_SPEED 15 ///< Maximum speed when only one martian remains
 
-#define MART_SPEED 5 ///< Speed of the martian's movement
 #define MART_BULLET_SPEED 5 ///< Speed of the martian's bullets
 
-#define MART_MOVE_TIMER 20 ///< Timer interval for martian movement
-#define MART_SHOOT_FREQ 75 ///< Frequency at which martians can shoot
-#define MART_ANIMATION_SPEED 25 ///< Speed of the martian animation cycle
+#define MART_MOVE_TIMER 40           ///< Timer interval for martian movement (base, at 55 enemies)
+#define MART_SHOOT_FREQ 90           ///< Frequency at which martians can shoot (frames, at 55 enemies)
+#define MART_SHOOT_FREQ_MIN 25       ///< Minimum shoot interval (hardest difficulty)
+#define MART_MOVE_TIMER_MIN 2        ///< Minimum move timer (2 frames = very fast)
+#define MART_ANIMATION_SPEED 25      ///< Speed of the martian animation cycle
+
+// PERSISTENCE
+#define HIGHSCORE_FILE "highscore.dat" ///< File used for high score persistence
 
 // BULLETS CONFIGURATION
-#define MAX_ORP_BULLETS 20 ///< Maximum number of orphan bullets (bullets not associated with any ship or martian)
+#define BULLET_WIDTH 6
+#define BULLET_HEIGHT 12
+#define MAX_ORP_BULLETS                                                        \
+  20 ///< Maximum number of orphan bullets (bullets not associated with any ship
+     ///< or martian)
 
 // OBJECT CONFIGURATION
-#define OBJECT_TIMER 5 ///< Default timer value for objects (used in animations and expiration timing)
-#define MAX_OBJECTS 55 ///< Maximum number of objects allowed in the game (e.g., explosions)
+#define OBJECT_TIMER                                                           \
+  20 ///< Default timer value for objects (used in animations and expiration
+     ///< timing)
+#define MAX_OBJECTS                                                            \
+  55 ///< Maximum number of objects allowed in the game (e.g., explosions)
 
-#define EXPLOSION_WIDTH 41 ///< Width of the explosion sprite
+#define EXPLOSION_WIDTH 41  ///< Width of the explosion sprite
 #define EXPLOSION_HEIGHT 34 ///< Height of the explosion sprite
+
+// UFO CONFIGURATION
+#define UFO_SPEED 4         ///< Speed of the UFO
+#define UFO_POINTS_MIN 50
+#define UFO_POINTS_MAX 300
+#define UFO_SPAWN_CHANCE 500 ///< 1 in 500 chance per frame to spawn UFO (used if UFO_TIMER is 0)
+#define UFO_TIMER 1          ///< 1 = timer-based spawn (arcade), 0 = random-based
+#define UFO_SPAWN_DELAY 750   ///< Frames between UFO spawns (~25s at 30FPS)
+#define UFO_WIDTH 32        ///< Display width (2x sprite scale)
+#define UFO_HEIGHT 14       ///< Display height (2x sprite scale)
+#define UFO_INIT_POS_Y 168  ///< Y-coordinate where the UFO flies (above enemies)
+#define UFO_SPRITE_W 16     ///< Source sprite width in pixels
+#define UFO_SPRITE_H 7      ///< Source sprite height in pixels
+
+// EXTRA LIFE
+#define EXTRA_LIFE_SCORE 1500 ///< Score threshold for awarding an extra ship
+
+// BUNKERS CONFIGURATION
+#define NUM_BUNKERS 4
+#define BUNKER_PARTS 5       ///< Number of sprite parts per bunker
+#define BUNKER_PART_WIDTH 20
+#define BUNKER_PART_HEIGHT 16
+#define BUNKER_INIT_POS_Y DISPLAY_HEIGHT - 160
+#define BUNKER_LIFE 3 ///< 3 states (frames), 1 hit per state
+
+// TOP SCORE TABLE
+#define TOP_SCORES_FILE "highscores.dat"
+#define MAX_TOP_SCORES 5
+
+typedef struct {
+  char name[4];
+  int score;
+} TOP_ENTRY;
 
 #endif /* CONFIG_H */

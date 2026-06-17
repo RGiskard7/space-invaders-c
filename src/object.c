@@ -43,7 +43,8 @@ struct _object {
  * @param fixed True if the object is fixed in place, false if it is movable.
  * @return Pointer to the created OBJECT structure, or NULL if allocation fails.
  */
-OBJECT *obj_create(ALLEGRO_BITMAP *bitmap, int source_x, int source_y, int width, int height, float cx, float cy, bool fixed) {
+OBJECT *obj_create(ALLEGRO_BITMAP *bitmap, int source_x, int source_y, 
+                   int width, int height, float cx, float cy, bool fixed) {
     OBJECT *new_object = NULL;
 
     if (!bitmap) {
@@ -116,7 +117,7 @@ STATUS obj_set_x(OBJECT *object, float cx) {
  */
 float obj_get_x(OBJECT *object) {
     if (!object) {
-        return ERROR;
+        return 0.0f;
     }
 
     return object->x;
@@ -147,7 +148,7 @@ STATUS obj_set_y(OBJECT *object, float cy) {
  */
 float obj_get_y(OBJECT *object) {
     if (!object) {
-        return ERROR;
+        return 0.0f;
     }
 
     return object->y;

@@ -84,26 +84,6 @@ STATUS bullet_set_source_y(BULLET *bullet, int source_y);
 int bullet_get_source_y(BULLET *bullet);
 
 /**
- * @brief Sets the dx (horizontal increment) of the bullet.
- */
-STATUS bullet_set_dx(BULLET *bullet, int dx);
-
-/**
- * @brief Gets the dx of the bullet.
- */
-int bullet_get_dx(BULLET *bullet);
-
-/**
- * @brief Sets the dy (vertical increment) of the bullet.
- */
-STATUS bullet_set_dy(BULLET *bullet, int dy);
-
-/**
- * @brief Gets the dy of the bullet.
- */
-int bullet_get_dy(BULLET *bullet);
-
-/**
  * @brief Gets the width of the bullet.
  */
 int bullet_get_width(BULLET *bullet);
@@ -126,6 +106,6 @@ STATUS bullet_move(BULLET *bullet, float speed);
 /**
  * @brief Checks for collision between the bullet and a specified object.
  */
-bool bullet_check_colision(BULLET *bullet, int obj_x, int obj_y, int obj_width, int obj_height);
+bool bullet_check_collision(BULLET *bullet, int obj_x, int obj_y, int obj_width, int obj_height);
 
 #endif /* BULLET_H */
