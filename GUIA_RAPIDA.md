@@ -13,11 +13,23 @@ scripts/install-deps.sh
 scripts/build.sh run
 ```
 
+#### Para generar ejecutable:
+
+```bash
+scripts/dist.sh
+```
+
 ### Windows
 
 ```cmd
 scripts\install-deps.bat
 scripts\build.bat run
+```
+
+#### Para generar ejecutable:
+
+```cmd
+scripts/dist.bat
 ```
 
 ---
